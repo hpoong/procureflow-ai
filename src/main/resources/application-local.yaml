@@ -7,6 +7,8 @@ spring:
     url: ${DB_URL:jdbc:postgresql://localhost:5432/procureflow}
     username: ${DB_USERNAME:procureflow}
     password: ${DB_PASSWORD:procureflow}
+  jpa:
+    show-sql: false
 
 springdoc:
   api-docs:
@@ -14,3 +16,15 @@ springdoc:
   swagger-ui:
     enabled: true
     path: /swagger-ui.html
+
+# p6spy: ? 가 실제 값으로 치환된 SQL을 멀티라인으로 출력
+decorator:
+  datasource:
+    p6spy:
+      enable-logging: true
+      multiline: true
+      logging: sysout
+
+logging:
+  level:
+    p6spy: INFO

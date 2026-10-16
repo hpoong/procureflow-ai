@@ -1,4 +1,4 @@
-# 로컬 DB (PostgreSQL · Flyway)
+# 로컬 DB (PostgreSQL · Flyway · JPA)
 
 ## 기동
 
@@ -24,3 +24,14 @@ docker compose up -d
 
 - 스크립트: `src/main/resources/db/migration/V{version}__{desc}.sql`
 - 이미 적용된 파일은 수정하지 않는다. 변경은 새 버전 파일로 추가한다.
+- JPA `ddl-auto`는 `validate`다. 테이블 변경은 Flyway로만 한다.
+
+## SQL 로그 (파라미터 포함)
+
+로컬은 **p6spy**로 `?`가 **실제 값으로 치환된 SQL**을 출력한다.
+
+- 의존성: `com.github.gavlyukovskiy:p6spy-spring-boot-starter`
+- `application-local.yaml`: `decorator.datasource.p6spy.enable-logging=true`, `multiline=true`
+- 기본(`application.yaml`)은 `enable-logging=false` (운영 유출 방지)
+
+Hibernate `show-sql` / bind TRACE만으로는 완성 SQL이 한눈에 안 나오므로 로컬에서는 p6spy를 쓴다.

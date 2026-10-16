@@ -7,7 +7,7 @@
 | --- | --- |
 | 언어 / 런타임 | Java 21 |
 | 프레임워크 | Spring Boot 4.x |
-| DB | PostgreSQL 16 + Flyway |
+| DB | PostgreSQL 16 + Flyway + Spring Data JPA |
 | 기본 패키지 | `com.hopoong.procureflow` |
 | 기본 프로파일 | `local` (`application.yaml`) |
 
