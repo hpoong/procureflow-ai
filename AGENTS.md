@@ -11,7 +11,7 @@ Codex · Cursor · Claude 모두 이 파일만 진입점으로 쓴다. 규칙은
 
 | 작업 | 읽을 문서 |
 | --- | --- |
-| 공통 코딩·API·SQL·설정·테스트 등 | [convention/README.md](convention/README.md) — **작업별 문서 표에서 필요한 섹션만** |
+| 공통 코딩·API·설정·테스트 등 | [convention/README.md](convention/README.md) — **작업별 문서 표에서 필요한 문서만** |
 | 아키텍처·기능·가이드·ADR·런북 | [docs/README.md](docs/README.md) → 해당 하위 문서 |
 
 `convention/`·`docs/` 전체를 한 번에 읽지 않는다. 표에서 고른 문서·섹션만 연다.
