@@ -2,4 +2,10 @@ spring:
   application:
     name: procureflow-ai
   profiles:
+    # 미지정 시 local. 운영은 SPRING_PROFILES_ACTIVE=prd 로 명시한다.
     default: local
+  datasource:
+    driver-class-name: org.postgresql.Driver
+  flyway:
+    enabled: true
+    locations: classpath:db/migration

@@ -1,13 +1,13 @@
 # ProcureFlow AI
 
-제조업 구매자재의 **발주 → 입고 → 수입검사 → 재고 반영**을 다루는 Spring Boot 백엔드입니다.
-
-SAP S/4HANA · Oracle Fusion SCM · Dynamics 365의 공개 기능을 벤치마크한 설계를 기준으로 하며, 특정 ERP DB·비공개 운영 절차를 복제하지 않습니다.
+제조업 구매자재의 **발주 → 입고 → 수입검사 → 재고 반영**을 다루는 Spring Boot 백엔드입니다.  
+구매·창고·품질·재고 담당자가 같은 수량·상태 기준으로 입고부터 가용 전환까지 처리할 수 있게 합니다.
 
 | 항목 | 내용 |
 | --- | --- |
 | 언어 / 런타임 | Java 21 |
 | 프레임워크 | Spring Boot 4.x |
+| DB | PostgreSQL 16 + Flyway |
 | 기본 패키지 | `com.hopoong.procureflow` |
 | 기본 프로파일 | `local` (`application.yaml`) |
 
@@ -87,12 +87,13 @@ flowchart TD
 
 ```text
 procureflow-ai/
-├── AGENTS.md          AI 에이전트 작업 규칙 (단일 원본)
-├── CLAUDE.md          Claude → AGENTS.md
-├── README.md          이 파일
-├── convention/        공통 코딩·API·커밋 규칙
-├── docs/              아키텍처·기능·가이드·ADR·런북
-└── src/               Spring Boot 애플리케이션
+├── AGENTS.md             AI 에이전트 작업 규칙 (단일 원본)
+├── CLAUDE.md             Claude → AGENTS.md
+├── README.md             이 파일
+├── docker-compose.yml    로컬 PostgreSQL
+├── convention/           공통 코딩·API·커밋 규칙
+├── docs/                 아키텍처·기능·가이드·ADR·런북
+└── src/                  Spring Boot 애플리케이션
 ```
 
 | 문서 | 용도 |
@@ -105,7 +106,24 @@ procureflow-ai/
 
 ## 로컬 실행
 
-요구사항: **JDK 21**, Gradle Wrapper 포함.
+요구사항: **JDK 21**, **Docker**, Gradle Wrapper 포함.
+
+### 1. PostgreSQL
+
+```bash
+docker compose up -d
+```
+
+| 항목 | 기본값 (`docker-compose.yml`) |
+| --- | --- |
+| host / port | `localhost:5432` |
+| database | `procureflow` |
+| user / password | `procureflow` / `procureflow` |
+
+앱은 `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`로 덮어쓸 수 있다.  
+`local` 프로파일에서 미지정 시 위 기본값을 쓴다.
+
+### 2. 애플리케이션
 
 ```bash
 ./gradlew bootRun
@@ -117,14 +135,16 @@ Windows:
 gradlew.bat bootRun
 ```
 
-기본 포트는 `application-local.yaml` 기준 **8080**.  
-프로파일을 지정하지 않으면 `local`이 기본이다.
+- 포트: **8080** (`application-local.yaml`)
+- 프로파일 미지정 시 `local`
+- 기동 시 Flyway가 `src/main/resources/db/migration`을 적용한다
 
 ```bash
 ./gradlew test
 ```
 
-비밀값(DB 비밀번호, API 키 등)은 `application*.yaml`에 넣지 않고 환경 변수로 주입한다.
+테스트는 Testcontainers로 PostgreSQL을 띄운다 (Docker 필요).  
+운영·공유 환경의 비밀값은 `application*.yaml`에 넣지 않고 환경 변수로 주입한다.
 
 ---
 

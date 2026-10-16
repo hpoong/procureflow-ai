@@ -1,3 +1,9 @@
-# 로컬 개발 기본 프로파일. 비밀·환경별 값은 여기에 두지 않는다.
+# 로컬 개발 기본 프로파일.
 server:
   port: 8080
+
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/procureflow}
+    username: ${DB_USERNAME:procureflow}
+    password: ${DB_PASSWORD:procureflow}
