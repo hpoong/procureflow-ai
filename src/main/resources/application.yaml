@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: procureflow-ai
+  profiles:
+    default: local
