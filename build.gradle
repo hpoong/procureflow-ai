@@ -25,7 +25,6 @@ dependencies {
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.1.1'
 	runtimeOnly 'org.postgresql:postgresql'
 	runtimeOnly 'org.flywaydb:flyway-database-postgresql'
-	# 로컬 SQL 로그: 파라미터가 치환된 완성 SQL 출력 (운영에서는 yaml로 끔)
 	runtimeOnly 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:2.0.1'
 
 	compileOnly 'org.projectlombok:lombok'
@@ -35,8 +34,9 @@ dependencies {
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
 	testImplementation 'org.springframework.boot:spring-boot-testcontainers'
-	testImplementation 'org.testcontainers:postgresql'
-	testImplementation 'org.testcontainers:junit-jupiter'
+	testImplementation platform('org.testcontainers:testcontainers-bom:2.0.5')
+	testImplementation 'org.testcontainers:testcontainers-postgresql'
+	testImplementation 'org.testcontainers:testcontainers-junit-jupiter'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
