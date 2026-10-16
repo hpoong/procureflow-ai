@@ -1,0 +1,6 @@
+---
+description: Project agent rules — single source is AGENTS.md
+alwaysApply: true
+---
+
+프로젝트 규칙은 루트 `AGENTS.md` 하나만 본다. 이 파일에 규칙을 쓰지 않는다.
