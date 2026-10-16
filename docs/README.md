@@ -12,7 +12,9 @@ docs/
 ├── features/                 ← 기능 정리 (패키지와 동일)
 │   └── README.md
 ├── guides/                   ← How-to (로컬·연동·작업 절차)
-│   └── local-db.md
+│   ├── local-db.md
+│   └── swagger.md
+
 ├── decisions/                ← ADR (왜 이렇게 했는지)
 │   └── .keep
 └── runbooks/                 ← 장애·운영 대응

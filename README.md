@@ -138,6 +138,7 @@ gradlew.bat bootRun
 - 포트: **8080** (`application-local.yaml`)
 - 프로파일 미지정 시 `local`
 - 기동 시 Flyway가 `src/main/resources/db/migration`을 적용한다
+- Swagger UI: [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html) (`local`만 활성)
 
 ```bash
 ./gradlew test
