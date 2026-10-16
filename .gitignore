@@ -44,4 +44,5 @@ CONTEXT.md
 .codex
 
 /temp
+/agent
 .env
