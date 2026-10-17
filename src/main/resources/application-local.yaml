@@ -28,3 +28,8 @@ decorator:
 logging:
   level:
     p6spy: INFO
+
+procureflow:
+  auth:
+    header-actor:
+      enabled: true

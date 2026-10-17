@@ -31,3 +31,9 @@ decorator:
   datasource:
     p6spy:
       enable-logging: false
+
+procureflow:
+  auth:
+    header-actor:
+      # 인증 도입 전 임시. true 일 때만 X-Org-Id / X-User-Id 를 요청자로 쓴다. 운영 금지.
+      enabled: false
