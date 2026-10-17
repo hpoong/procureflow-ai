@@ -25,6 +25,72 @@ docker compose up -d
 - 스크립트: `src/main/resources/db/migration/V{version}__{desc}.sql`
 - 이미 적용된 파일은 수정하지 않는다. 변경은 새 버전 파일로 추가한다.
 - JPA `ddl-auto`는 `validate`다. 테이블 변경은 Flyway로만 한다.
+- 현재 버전: V1 baseline, V2 발주 스키마, V3 마스터 최소 테이블(`plant`·`warehouse`·`supplier`·`item`), V4 발주 번호 시퀀스(`po_number_seq`).
+
+## 임시 요청자 헤더
+
+`procureflow.auth.header-actor.enabled` — 인증 도입 전 임시. `true`(local 만)일 때 `X-Org-Id` / `X-User-Id` 헤더를 요청자로 쓴다. 공통 기본값은 `false`이고 운영에 켜지 않는다. ([architecture](../architecture/README.md#요청자-컨텍스트))
+
+## 로컬 QA 시드
+
+마스터 관리 API 가 없어 SQL 로 넣는다(local 전용, Flyway 에 넣지 않음). 고정값:
+
+| 구분 | UUID | code / 상태 |
+| --- | --- | --- |
+| QA 조직 O1 | `00000000-0000-0000-0000-00000000a001` | - |
+| QA 조직 O2 | `00000000-0000-0000-0000-00000000a002` | - |
+| QA 사용자 U1 / U2 | `00000000-0000-0000-0000-00000000b001` / `…b002` | - |
+| plant P1 (O1) | `10000000-0000-0000-0000-000000000001` | `qa-plant-01` ACTIVE |
+| warehouse W1 (O1, P1) | `20000000-0000-0000-0000-000000000001` | `qa-wh-01` ACTIVE |
+| supplier S1 (O1) | `30000000-0000-0000-0000-000000000001` | `qa-sup-01` ACTIVE |
+| supplier S2 (O1) | `30000000-0000-0000-0000-000000000002` | `qa-sup-02` INACTIVE |
+| supplier S9 (O2) | `30000000-0000-0000-0000-000000000009` | `qa-sup-09` ACTIVE |
+| item I1 (O1) | `40000000-0000-0000-0000-000000000001` | `qa-item-01` ACTIVE, purchase_enabled=true |
+| item I2 (O1) | `40000000-0000-0000-0000-000000000002` | `qa-item-02` ACTIVE, purchase_enabled=false |
+
+```sql
+-- 재실행 안전: ON CONFLICT (id) DO NOTHING
+INSERT INTO plant (id, org_id, plant_code, name, status, created_by, created_at, updated_by, updated_at)
+VALUES ('10000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-00000000a001', 'qa-plant-01', 'QA Plant 01', 'ACTIVE',
+        '00000000-0000-0000-0000-00000000b001', now(), '00000000-0000-0000-0000-00000000b001', now())
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO warehouse (id, org_id, plant_id, warehouse_code, name, status, created_by, created_at, updated_by, updated_at)
+VALUES ('20000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-00000000a001', '10000000-0000-0000-0000-000000000001',
+        'qa-wh-01', 'QA Warehouse 01', 'ACTIVE',
+        '00000000-0000-0000-0000-00000000b001', now(), '00000000-0000-0000-0000-00000000b001', now())
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO supplier (id, org_id, supplier_code, name, status, created_by, created_at, updated_by, updated_at)
+VALUES ('30000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-00000000a001', 'qa-sup-01', 'QA Supplier 01', 'ACTIVE',
+        '00000000-0000-0000-0000-00000000b001', now(), '00000000-0000-0000-0000-00000000b001', now()),
+       ('30000000-0000-0000-0000-000000000002', '00000000-0000-0000-0000-00000000a001', 'qa-sup-02', 'QA Supplier 02', 'INACTIVE',
+        '00000000-0000-0000-0000-00000000b001', now(), '00000000-0000-0000-0000-00000000b001', now()),
+       ('30000000-0000-0000-0000-000000000009', '00000000-0000-0000-0000-00000000a002', 'qa-sup-09', 'QA Supplier 09', 'ACTIVE',
+        '00000000-0000-0000-0000-00000000b001', now(), '00000000-0000-0000-0000-00000000b001', now())
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO item (id, org_id, item_code, name, status, purchase_enabled, created_by, created_at, updated_by, updated_at)
+VALUES ('40000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-00000000a001', 'qa-item-01', 'QA Item 01', 'ACTIVE', true,
+        '00000000-0000-0000-0000-00000000b001', now(), '00000000-0000-0000-0000-00000000b001', now()),
+       ('40000000-0000-0000-0000-000000000002', '00000000-0000-0000-0000-00000000a001', 'qa-item-02', 'QA Item 02', 'ACTIVE', false,
+        '00000000-0000-0000-0000-00000000b001', now(), '00000000-0000-0000-0000-00000000b001', now())
+ON CONFLICT (id) DO NOTHING;
+```
+
+정리(FK 역순, QA 조직 O1·O2 의 발주만. 마스터 시드는 남긴다). 사용자가 local DB 에서 직접 실행한다.
+
+```sql
+DELETE FROM purchase_order_audit_log WHERE po_id IN (SELECT id FROM purchase_order WHERE org_id IN ('00000000-0000-0000-0000-00000000a001', '00000000-0000-0000-0000-00000000a002'));
+DELETE FROM purchase_order_command   WHERE org_id IN ('00000000-0000-0000-0000-00000000a001', '00000000-0000-0000-0000-00000000a002');
+DELETE FROM purchase_order_line      WHERE po_id IN (SELECT id FROM purchase_order WHERE org_id IN ('00000000-0000-0000-0000-00000000a001', '00000000-0000-0000-0000-00000000a002'));
+DELETE FROM purchase_order_revision  WHERE org_id IN ('00000000-0000-0000-0000-00000000a001', '00000000-0000-0000-0000-00000000a002');
+DELETE FROM purchase_order           WHERE org_id IN ('00000000-0000-0000-0000-00000000a001', '00000000-0000-0000-0000-00000000a002');
+```
+
+## 통합 테스트 (Testcontainers)
+
+`*IT` 는 Docker 가 있어야 돈다(없으면 skip). Colima 를 쓰면 `DOCKER_HOST=unix://$HOME/.colima/default/docker.sock` 과 `TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE=/var/run/docker.sock` 을 지정한다.
 
 ## SQL 로그 (파라미터 포함)
 

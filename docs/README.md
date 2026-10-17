@@ -10,7 +10,9 @@ docs/
 ├── architecture/             ← 아키텍처
 │   └── README.md
 ├── features/                 ← 기능 정리 (패키지와 동일)
-│   └── README.md
+│   ├── README.md
+│   ├── purchaseorder/README.md
+│   └── masterdata/README.md
 ├── guides/                   ← How-to (로컬·연동·작업 절차)
 │   ├── local-db.md
 │   └── swagger.md
