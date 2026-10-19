@@ -14,6 +14,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+/** item: 품목 기준정보. ACTIVE 이고 purchase_enabled 인 품목만 발주할 수 있다. */
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity

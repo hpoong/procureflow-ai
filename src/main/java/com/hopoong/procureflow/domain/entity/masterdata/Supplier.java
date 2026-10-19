@@ -14,6 +14,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+/** supplier: 공급사 기준정보. 발주 생성 시 조직 일치·활성 여부를 검증한다. */
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity

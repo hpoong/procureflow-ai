@@ -20,6 +20,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+/** purchase_order_command: 변경 명령의 Idempotency-Key 와 요청 해시, 재시도 결과를 보관한다. */
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity

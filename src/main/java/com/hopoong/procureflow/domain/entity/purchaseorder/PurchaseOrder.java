@@ -18,6 +18,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+/** purchase_order: 발주 집합 루트. 재고 수량은 직접 보관하지 않는다. */
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity

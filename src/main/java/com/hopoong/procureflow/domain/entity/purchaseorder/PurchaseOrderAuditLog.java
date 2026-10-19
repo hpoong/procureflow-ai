@@ -18,6 +18,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+/** purchase_order_audit_log: 발주 변경과 상태 전이의 행위자·사유·전후 스냅샷을 append-only 로 보관한다. */
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity

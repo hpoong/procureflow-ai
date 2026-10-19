@@ -16,6 +16,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+/** purchase_order_line: 현재 유효 발주 개정의 라인 투영. received_qty 는 GRN 원장에서 산출한다. */
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
