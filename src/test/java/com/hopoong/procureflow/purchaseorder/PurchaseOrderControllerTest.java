@@ -22,8 +22,8 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import com.hopoong.procureflow.purchaseorder.controller.PurchaseOrderController;
-import com.hopoong.procureflow.purchaseorder.service.PurchaseOrderCreateFacade;
+import com.hopoong.procureflow.api.purchaseorder.controller.PurchaseOrderController;
+import com.hopoong.procureflow.api.purchaseorder.service.PurchaseOrderCreateFacade;
 
 import tools.jackson.databind.ObjectMapper;
 

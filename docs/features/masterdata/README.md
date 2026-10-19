@@ -1,6 +1,6 @@
 # masterdata (기준정보)
 
-패키지: `com.hopoong.procureflow.masterdata` (`domain`, `repository`)
+패키지: `domain.entity.masterdata`, `domain.repository.masterdata` (기본 패키지 `com.hopoong.procureflow` 생략). 관리 API 가 없어 `api.masterdata` 는 아직 없다.
 
 ## masterdata(기준정보).최소 마스터
 

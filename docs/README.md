@@ -37,13 +37,14 @@ docs/
 
 ## features ↔ 패키지 정렬
 
-`features/` 문서는 **코드 패키지 구조를 최대한 그대로** 따른다.  
-패키지가 생기면 문서 폴더도 같은 이름으로 두고, 패키지가 쪼개지면 문서도 같이 쪼갠다.
+`features/` 문서는 **코드 패키지의 도메인 이름을 그대로** 따른다.  
+코드는 계층(`api`, `domain.entity`, `domain.repository`) 아래에 도메인 패키지를 두므로, 계층을 뺀 도메인 이름이 문서 폴더가 된다.  
+도메인 패키지가 생기면 문서 폴더도 같은 이름으로 두고, 도메인이 쪼개지면 문서도 같이 쪼갠다.
 
 | 코드 패키지 | 문서 경로 |
 |-------------|-----------|
-| `com.hopoong.procureflow.order` | `features/order/` |
-| `com.hopoong.procureflow.order.item` (예시) | `features/order/item/` |
+| `api.order`, `domain.entity.order`, `domain.repository.order` | `features/order/` |
+| `api.order.item` (예시) | `features/order/item/` |
 | `com.hopoong.procureflow.common.*` | `features/common/` (횡단만) |
 
 문서 안에서 하위 주제는 **패키지명(한글명).세부 내용** 형식으로 적는다.
@@ -59,11 +60,14 @@ docs/
 ```text
 예) 패키지·문서 대응
 
-com.hopoong.procureflow.order/
-├── controller/
-├── service/
-├── mapper/
-└── model/
+com.hopoong.procureflow
+├── api/order/
+│   ├── controller/
+│   ├── service/
+│   └── model/
+└── domain/
+    ├── entity/order/
+    └── repository/order/
 
 docs/features/order/
 └── README.md          ← order(주문).* 주제들을 여기(또는 하위 md)에 정리

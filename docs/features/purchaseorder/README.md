@@ -1,6 +1,6 @@
 # purchaseorder (발주)
 
-패키지: `com.hopoong.procureflow.purchaseorder` — 이번 범위는 **PO-01 초안 생성**이다.
+패키지: `api.purchaseorder` (`controller`, `service`, `model`), `domain.entity.purchaseorder`, `domain.repository.purchaseorder` (기본 패키지 `com.hopoong.procureflow` 생략) — 이번 범위는 **PO-01 초안 생성**이다.
 
 ## purchaseorder(발주).초안 생성
 

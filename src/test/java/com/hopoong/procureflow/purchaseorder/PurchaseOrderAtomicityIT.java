@@ -17,12 +17,12 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.hopoong.procureflow.masterdata.repository.ItemRepository;
-import com.hopoong.procureflow.masterdata.repository.PlantRepository;
-import com.hopoong.procureflow.masterdata.repository.SupplierRepository;
-import com.hopoong.procureflow.masterdata.repository.WarehouseRepository;
-import com.hopoong.procureflow.purchaseorder.domain.PurchaseOrderAuditLog;
-import com.hopoong.procureflow.purchaseorder.repository.PurchaseOrderAuditLogRepository;
+import com.hopoong.procureflow.domain.repository.masterdata.ItemRepository;
+import com.hopoong.procureflow.domain.repository.masterdata.PlantRepository;
+import com.hopoong.procureflow.domain.repository.masterdata.SupplierRepository;
+import com.hopoong.procureflow.domain.repository.masterdata.WarehouseRepository;
+import com.hopoong.procureflow.domain.entity.purchaseorder.PurchaseOrderAuditLog;
+import com.hopoong.procureflow.domain.repository.purchaseorder.PurchaseOrderAuditLogRepository;
 import com.hopoong.procureflow.support.PostgresContainerSupport;
 
 import tools.jackson.databind.ObjectMapper;

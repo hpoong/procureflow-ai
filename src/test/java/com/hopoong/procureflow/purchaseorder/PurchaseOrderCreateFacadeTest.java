@@ -18,11 +18,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.dao.DataIntegrityViolationException;
 
 import com.hopoong.procureflow.common.auth.RequestActor;
-import com.hopoong.procureflow.purchaseorder.model.CreatePurchaseOrderRequest;
-import com.hopoong.procureflow.purchaseorder.service.PurchaseOrderCreateFacade;
-import com.hopoong.procureflow.purchaseorder.service.PurchaseOrderCreateService;
-import com.hopoong.procureflow.purchaseorder.service.PurchaseOrderReplayService;
-import com.hopoong.procureflow.purchaseorder.service.PurchaseOrderSnapshotWriter;
+import com.hopoong.procureflow.api.purchaseorder.model.CreatePurchaseOrderRequest;
+import com.hopoong.procureflow.api.purchaseorder.service.PurchaseOrderCreateFacade;
+import com.hopoong.procureflow.api.purchaseorder.service.PurchaseOrderCreateService;
+import com.hopoong.procureflow.api.purchaseorder.service.PurchaseOrderReplayService;
+import com.hopoong.procureflow.api.purchaseorder.service.PurchaseOrderSnapshotWriter;
 
 class PurchaseOrderCreateFacadeTest {
 

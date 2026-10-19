@@ -8,16 +8,24 @@ Spring Boot 권장 구조와 일반적인 계층형 관례를 따른다.
 
 ```text
 com.hopoong.procureflow
-├── {domain}/          예: order, vendor
-│   ├── controller
-│   ├── service
-│   ├── model          (또는 dto / domain)
-│   └── …              영속화 계층은 도입 시 repository 등으로 추가
+├── api/
+│   └── {domain}/      예: purchaseorder
+│       ├── controller
+│       ├── service
+│       └── model      요청·응답 DTO
+├── domain/
+│   ├── entity/
+│   │   └── {domain}/  JPA 엔티티·enum
+│   └── repository/
+│       └── {domain}/  Spring Data 리포지토리
 ├── common/            둘 이상 도메인이 쓰는 것만
 └── config/
 ```
 
-- **도메인(기능) 단위**로 묶는 방식을 기본으로 한다 (package-by-feature).
+- 최상위는 **계층**(`api`, `domain`)으로 나누고, 그 아래를 **도메인(기능) 이름**으로 나눈다.
+- 같은 도메인은 계층이 달라도 같은 이름을 쓴다 (`api.purchaseorder`, `domain.entity.purchaseorder`).
+- `domain`은 `api`를 참조하지 않는다. 다른 도메인의 엔티티·리포지토리는 `api.{domain}.service`에서 가져다 쓸 수 있다.
+- API 가 없는 도메인(예: `masterdata`)은 `domain` 쪽만 둔다.
 - `common`은 도메인을 참조하지 않는다. 한 도메인만 쓰는 코드를 미리 `common`에 올리지 않는다.
 - 순환 의존을 만들지 않는다.
 
@@ -45,6 +53,6 @@ com.hopoong.procureflow
 
 ## 체크리스트
 
-- [ ] 패키지가 도메인 단위인가?
+- [ ] 계층(`api` / `domain.entity` / `domain.repository`) 아래 도메인 이름으로 나뉘었는가?
 - [ ] 계층 책임이 섞이지 않았는가?
 - [ ] 트랜잭션·생성자 주입이 올바른가?

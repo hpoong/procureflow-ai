@@ -5,15 +5,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import com.hopoong.procureflow.masterdata.domain.Item;
-import com.hopoong.procureflow.masterdata.domain.MasterStatus;
-import com.hopoong.procureflow.masterdata.domain.Plant;
-import com.hopoong.procureflow.masterdata.domain.Supplier;
-import com.hopoong.procureflow.masterdata.domain.Warehouse;
-import com.hopoong.procureflow.masterdata.repository.ItemRepository;
-import com.hopoong.procureflow.masterdata.repository.PlantRepository;
-import com.hopoong.procureflow.masterdata.repository.SupplierRepository;
-import com.hopoong.procureflow.masterdata.repository.WarehouseRepository;
+import com.hopoong.procureflow.domain.entity.masterdata.Item;
+import com.hopoong.procureflow.domain.entity.masterdata.MasterStatus;
+import com.hopoong.procureflow.domain.entity.masterdata.Plant;
+import com.hopoong.procureflow.domain.entity.masterdata.Supplier;
+import com.hopoong.procureflow.domain.entity.masterdata.Warehouse;
+import com.hopoong.procureflow.domain.repository.masterdata.ItemRepository;
+import com.hopoong.procureflow.domain.repository.masterdata.PlantRepository;
+import com.hopoong.procureflow.domain.repository.masterdata.SupplierRepository;
+import com.hopoong.procureflow.domain.repository.masterdata.WarehouseRepository;
 
 /** 테스트마다 새 조직과 그 조직의 마스터를 만든다. */
 final class PurchaseOrderFixture {

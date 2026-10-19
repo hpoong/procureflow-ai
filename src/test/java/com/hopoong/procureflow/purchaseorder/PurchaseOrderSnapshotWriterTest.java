@@ -10,10 +10,10 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 
-import com.hopoong.procureflow.purchaseorder.domain.ReceiptRouting;
-import com.hopoong.procureflow.purchaseorder.model.CreatePurchaseOrderLineRequest;
-import com.hopoong.procureflow.purchaseorder.model.CreatePurchaseOrderRequest;
-import com.hopoong.procureflow.purchaseorder.service.PurchaseOrderSnapshotWriter;
+import com.hopoong.procureflow.domain.entity.purchaseorder.ReceiptRouting;
+import com.hopoong.procureflow.api.purchaseorder.model.CreatePurchaseOrderLineRequest;
+import com.hopoong.procureflow.api.purchaseorder.model.CreatePurchaseOrderRequest;
+import com.hopoong.procureflow.api.purchaseorder.service.PurchaseOrderSnapshotWriter;
 
 import tools.jackson.databind.json.JsonMapper;
 
