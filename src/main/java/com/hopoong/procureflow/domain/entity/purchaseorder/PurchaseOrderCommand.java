@@ -30,8 +30,8 @@ public class PurchaseOrderCommand implements Persistable<UUID> {
     @Id
     private UUID id;
 
-    @Column(name = "org_id", nullable = false)
-    private UUID orgId;
+    @Column(name = "org_id", nullable = false, length = 64)
+    private String orgId;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "command_type", nullable = false, length = 50)
@@ -59,7 +59,7 @@ public class PurchaseOrderCommand implements Persistable<UUID> {
     @Transient
     private boolean newEntity = true;
 
-    public static PurchaseOrderCommand start(UUID orgId, PurchaseOrderCommandType commandType, String idempotencyKey,
+    public static PurchaseOrderCommand start(String orgId, PurchaseOrderCommandType commandType, String idempotencyKey,
             String requestSha256, Instant now) {
         PurchaseOrderCommand command = new PurchaseOrderCommand();
         command.id = UUID.randomUUID();

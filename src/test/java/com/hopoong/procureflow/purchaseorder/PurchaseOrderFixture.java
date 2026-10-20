@@ -18,8 +18,8 @@ import com.hopoong.procureflow.domain.repository.masterdata.WarehouseRepository;
 /** 테스트마다 새 조직과 그 조직의 마스터를 만든다. */
 final class PurchaseOrderFixture {
 
-    final UUID orgId = UUID.randomUUID();
-    final UUID userId = UUID.randomUUID();
+    final String orgId = "org-" + UUID.randomUUID();
+    final String userId = "user-" + UUID.randomUUID();
     final UUID plantId = UUID.randomUUID();
     final UUID warehouseId = UUID.randomUUID();
     final UUID supplierId = UUID.randomUUID();
@@ -29,7 +29,7 @@ final class PurchaseOrderFixture {
     PurchaseOrderFixture(PlantRepository plants, WarehouseRepository warehouses, SupplierRepository suppliers,
             ItemRepository items) {
         Instant now = Instant.now();
-        String code = orgId.toString().substring(0, 8);
+        String code = plantId.toString().substring(0, 8);
         plants.save(Plant.create(plantId, orgId, "p-" + code, "Plant", MasterStatus.ACTIVE, userId, now));
         warehouses.save(Warehouse.create(warehouseId, orgId, plantId, "w-" + code, "WH", MasterStatus.ACTIVE, userId, now));
         suppliers.save(Supplier.create(supplierId, orgId, "s-" + code, "Supplier", MasterStatus.ACTIVE, userId, now));

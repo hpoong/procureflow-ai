@@ -24,8 +24,8 @@ public class Plant {
     @Id
     private UUID id;
 
-    @Column(name = "org_id", nullable = false)
-    private UUID orgId;
+    @Column(name = "org_id", nullable = false, length = 64)
+    private String orgId;
 
     @Column(name = "plant_code", nullable = false, length = 32)
     private String plantCode;
@@ -37,14 +37,14 @@ public class Plant {
     @Column(nullable = false, length = 20)
     private MasterStatus status;
 
-    @Column(name = "created_by", nullable = false)
-    private UUID createdBy;
+    @Column(name = "created_by", nullable = false, length = 64)
+    private String createdBy;
 
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
 
-    @Column(name = "updated_by", nullable = false)
-    private UUID updatedBy;
+    @Column(name = "updated_by", nullable = false, length = 64)
+    private String updatedBy;
 
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
@@ -52,8 +52,8 @@ public class Plant {
     @Version
     private Long version;
 
-    public static Plant create(UUID id, UUID orgId, String plantCode, String name, MasterStatus status,
-            UUID actorId, Instant now) {
+    public static Plant create(UUID id, String orgId, String plantCode, String name, MasterStatus status,
+            String actorId, Instant now) {
         Plant entity = new Plant();
         entity.id = id;
         entity.orgId = orgId;

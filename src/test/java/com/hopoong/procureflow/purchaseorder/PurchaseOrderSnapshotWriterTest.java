@@ -20,7 +20,7 @@ import tools.jackson.databind.json.JsonMapper;
 class PurchaseOrderSnapshotWriterTest {
 
     private final PurchaseOrderSnapshotWriter writer = new PurchaseOrderSnapshotWriter(JsonMapper.builder().build());
-    private final UUID userId = UUID.randomUUID();
+    private final String userId = "user-" + UUID.randomUUID();
     private final UUID plantId = UUID.randomUUID();
     private final UUID supplierId = UUID.randomUUID();
     private final UUID warehouseId = UUID.randomUUID();
@@ -45,7 +45,7 @@ class PurchaseOrderSnapshotWriterTest {
     @Test
     void differentUserGivesDifferentHash() {
         CreatePurchaseOrderRequest request = request(new BigDecimal("10"), null);
-        assertThat(writer.requestHash(userId, request)).isNotEqualTo(writer.requestHash(UUID.randomUUID(), request));
+        assertThat(writer.requestHash(userId, request)).isNotEqualTo(writer.requestHash("user-" + UUID.randomUUID(), request));
     }
 
     @Test

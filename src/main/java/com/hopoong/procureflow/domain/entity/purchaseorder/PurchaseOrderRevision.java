@@ -38,8 +38,8 @@ public class PurchaseOrderRevision implements Persistable<UUID> {
     @Column(name = "po_id", nullable = false)
     private UUID poId;
 
-    @Column(name = "org_id", nullable = false)
-    private UUID orgId;
+    @Column(name = "org_id", nullable = false, length = 64)
+    private String orgId;
 
     @Column(name = "po_number", nullable = false, length = 64)
     private String poNumber;
@@ -72,8 +72,8 @@ public class PurchaseOrderRevision implements Persistable<UUID> {
     @Column(name = "content_sha256", nullable = false, length = 64)
     private String contentSha256;
 
-    @Column(name = "created_by", nullable = false)
-    private UUID createdBy;
+    @Column(name = "created_by", nullable = false, length = 64)
+    private String createdBy;
 
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
@@ -91,7 +91,7 @@ public class PurchaseOrderRevision implements Persistable<UUID> {
     private boolean newEntity = true;
 
     public static PurchaseOrderRevision initialDraft(PurchaseOrder po, String afterSnapshot, String contentSha256,
-            UUID createdBy, Instant now) {
+            String createdBy, Instant now) {
         PurchaseOrderRevision revision = new PurchaseOrderRevision();
         revision.id = UUID.randomUUID();
         revision.poId = po.getId();

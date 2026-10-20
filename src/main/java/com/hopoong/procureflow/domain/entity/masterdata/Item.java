@@ -24,8 +24,8 @@ public class Item {
     @Id
     private UUID id;
 
-    @Column(name = "org_id", nullable = false)
-    private UUID orgId;
+    @Column(name = "org_id", nullable = false, length = 64)
+    private String orgId;
 
     @Column(name = "item_code", nullable = false, length = 64)
     private String itemCode;
@@ -40,14 +40,14 @@ public class Item {
     @Column(name = "purchase_enabled", nullable = false)
     private boolean purchaseEnabled;
 
-    @Column(name = "created_by", nullable = false)
-    private UUID createdBy;
+    @Column(name = "created_by", nullable = false, length = 64)
+    private String createdBy;
 
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
 
-    @Column(name = "updated_by", nullable = false)
-    private UUID updatedBy;
+    @Column(name = "updated_by", nullable = false, length = 64)
+    private String updatedBy;
 
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
@@ -55,8 +55,8 @@ public class Item {
     @Version
     private Long version;
 
-    public static Item create(UUID id, UUID orgId, String itemCode, String name, MasterStatus status, boolean purchaseEnabled,
-            UUID actorId, Instant now) {
+    public static Item create(UUID id, String orgId, String itemCode, String name, MasterStatus status, boolean purchaseEnabled,
+            String actorId, Instant now) {
         Item entity = new Item();
         entity.id = id;
         entity.orgId = orgId;

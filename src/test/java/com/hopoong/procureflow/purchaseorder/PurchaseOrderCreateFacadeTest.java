@@ -33,7 +33,7 @@ class PurchaseOrderCreateFacadeTest {
 
     @Test
     void rethrowsOtherConstraintViolationsWithoutReplay() {
-        RequestActor actor = new RequestActor(UUID.randomUUID(), UUID.randomUUID());
+        RequestActor actor = new RequestActor("org-" + UUID.randomUUID(), "user-" + UUID.randomUUID());
         CreatePurchaseOrderRequest request = new CreatePurchaseOrderRequest(null, null, null, null, null, null, null,
                 null, null, List.of());
         when(writer.requestHash(any(), any())).thenReturn("h");

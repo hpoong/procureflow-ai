@@ -9,5 +9,5 @@ import com.hopoong.procureflow.domain.entity.masterdata.Plant;
 
 public interface PlantRepository extends JpaRepository<Plant, UUID> {
 
-    Optional<Plant> findByIdAndOrgId(UUID id, UUID orgId);
+    Optional<Plant> findByIdAndOrgId(UUID id, String orgId);
 }

@@ -11,7 +11,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.UUID;
 
 import org.springframework.stereotype.Component;
 
@@ -36,7 +35,7 @@ public class PurchaseOrderSnapshotWriter {
         this.objectMapper = objectMapper;
     }
 
-    public String requestHash(UUID userId, CreatePurchaseOrderRequest request) {
+    public String requestHash(String userId, CreatePurchaseOrderRequest request) {
         Map<String, Object> root = new LinkedHashMap<>();
         root.put("actorUserId", userId);
         root.put("request", requestTree(request));

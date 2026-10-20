@@ -24,8 +24,8 @@ public class Warehouse {
     @Id
     private UUID id;
 
-    @Column(name = "org_id", nullable = false)
-    private UUID orgId;
+    @Column(name = "org_id", nullable = false, length = 64)
+    private String orgId;
 
     @Column(name = "plant_id", nullable = false)
     private UUID plantId;
@@ -40,14 +40,14 @@ public class Warehouse {
     @Column(nullable = false, length = 20)
     private MasterStatus status;
 
-    @Column(name = "created_by", nullable = false)
-    private UUID createdBy;
+    @Column(name = "created_by", nullable = false, length = 64)
+    private String createdBy;
 
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
 
-    @Column(name = "updated_by", nullable = false)
-    private UUID updatedBy;
+    @Column(name = "updated_by", nullable = false, length = 64)
+    private String updatedBy;
 
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
@@ -55,8 +55,8 @@ public class Warehouse {
     @Version
     private Long version;
 
-    public static Warehouse create(UUID id, UUID orgId, UUID plantId, String warehouseCode, String name, MasterStatus status,
-            UUID actorId, Instant now) {
+    public static Warehouse create(UUID id, String orgId, UUID plantId, String warehouseCode, String name, MasterStatus status,
+            String actorId, Instant now) {
         Warehouse entity = new Warehouse();
         entity.id = id;
         entity.orgId = orgId;
