@@ -29,7 +29,7 @@ docker compose up -d
 
 ## 임시 요청자 헤더
 
-`procureflow.auth.header-actor.enabled` — 인증 도입 전 임시. `true`(local 만)일 때 `X-Org-Id` / `X-User-Id` 헤더를 요청자로 쓴다. 공통 기본값은 `false`이고 운영에 켜지 않는다. ([architecture](../architecture/README.md#요청자-컨텍스트))
+`procureflow.auth.header-actor.enabled` — 인증 도입 전 임시. `true`(local 만)일 때 `X-Org-Id` / `X-User-Id` 헤더를 요청자로 쓴다. 공통 기본값은 `false`이고 운영에 켜지 않는다. 지금은 리졸버가 헤더 대신 고정값 `Org-001` / `User-001` 을 쓴다(TODO). ([architecture](../architecture/README.md#요청자-컨텍스트))
 
 ## 로컬 QA 시드
 
@@ -37,9 +37,9 @@ docker compose up -d
 
 | 구분 | ID | code / 상태 |
 | --- | --- | --- |
-| QA 조직 O1 | `Org-001` | - |
+| QA 조직 O1 | `Org-001` (임시 고정 요청자) | - |
 | QA 조직 O2 | `Org-002` | - |
-| QA 사용자 U1 / U2 | `User-001` / `User-002` | - |
+| QA 사용자 U1 / U2 | `User-001` (임시 고정 요청자) / `User-002` | - |
 | plant P1 (O1) | `10000000-0000-0000-0000-000000000001` | `qa-plant-01` ACTIVE |
 | warehouse W1 (O1, P1) | `20000000-0000-0000-0000-000000000001` | `qa-wh-01` ACTIVE |
 | supplier S1 (O1) | `30000000-0000-0000-0000-000000000001` | `qa-sup-01` ACTIVE |
