@@ -10,6 +10,6 @@ import com.hopoong.procureflow.domain.entity.purchaseorder.PurchaseOrderCommandT
 
 public interface PurchaseOrderCommandRepository extends JpaRepository<PurchaseOrderCommand, UUID> {
 
-    Optional<PurchaseOrderCommand> findByOrgIdAndCommandTypeAndIdempotencyKey(UUID orgId,
+    Optional<PurchaseOrderCommand> findByOrgIdAndCommandTypeAndIdempotencyKey(String orgId,
             PurchaseOrderCommandType commandType, String idempotencyKey);
 }

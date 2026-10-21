@@ -1,7 +1,6 @@
 package com.hopoong.procureflow.api.purchaseorder.service;
 
 import java.util.Optional;
-import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,7 +30,7 @@ public class PurchaseOrderReplayService {
 
     /** 같은 키·같은 요청이면 해당 발주의 현재 상태를 돌려주고, 요청이 다르면 409 로 거절한다. */
     @Transactional(readOnly = true)
-    public Optional<PurchaseOrderCreatedResponse> find(UUID orgId, String idempotencyKey, String requestSha256) {
+    public Optional<PurchaseOrderCreatedResponse> find(String orgId, String idempotencyKey, String requestSha256) {
         Optional<PurchaseOrderCommand> found = commandRepository.findByOrgIdAndCommandTypeAndIdempotencyKey(orgId,
                 PurchaseOrderCommandType.CREATE_PURCHASE_ORDER, idempotencyKey);
         if (found.isEmpty()) {

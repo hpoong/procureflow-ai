@@ -11,7 +11,7 @@ import com.hopoong.procureflow.domain.entity.masterdata.Item;
 
 public interface ItemRepository extends JpaRepository<Item, UUID> {
 
-    Optional<Item> findByIdAndOrgId(UUID id, UUID orgId);
+    Optional<Item> findByIdAndOrgId(UUID id, String orgId);
 
-    List<Item> findAllByOrgIdAndIdIn(UUID orgId, Collection<UUID> ids);
+    List<Item> findAllByOrgIdAndIdIn(String orgId, Collection<UUID> ids);
 }

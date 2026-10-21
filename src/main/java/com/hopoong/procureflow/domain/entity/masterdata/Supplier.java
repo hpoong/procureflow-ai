@@ -24,8 +24,8 @@ public class Supplier {
     @Id
     private UUID id;
 
-    @Column(name = "org_id", nullable = false)
-    private UUID orgId;
+    @Column(name = "org_id", nullable = false, length = 64)
+    private String orgId;
 
     @Column(name = "supplier_code", nullable = false, length = 64)
     private String supplierCode;
@@ -37,14 +37,14 @@ public class Supplier {
     @Column(nullable = false, length = 20)
     private MasterStatus status;
 
-    @Column(name = "created_by", nullable = false)
-    private UUID createdBy;
+    @Column(name = "created_by", nullable = false, length = 64)
+    private String createdBy;
 
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
 
-    @Column(name = "updated_by", nullable = false)
-    private UUID updatedBy;
+    @Column(name = "updated_by", nullable = false, length = 64)
+    private String updatedBy;
 
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
@@ -52,8 +52,8 @@ public class Supplier {
     @Version
     private Long version;
 
-    public static Supplier create(UUID id, UUID orgId, String supplierCode, String name, MasterStatus status,
-            UUID actorId, Instant now) {
+    public static Supplier create(UUID id, String orgId, String supplierCode, String name, MasterStatus status,
+            String actorId, Instant now) {
         Supplier entity = new Supplier();
         entity.id = id;
         entity.orgId = orgId;

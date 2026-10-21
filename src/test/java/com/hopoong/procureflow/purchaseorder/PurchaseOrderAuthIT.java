@@ -49,10 +49,10 @@ class PurchaseOrderAuthIT {
         }
 
         @Test
-        void returns401WhenUserHeaderIsNotUuid() throws Exception {
+        void returns401WhenUserHeaderTooLong() throws Exception {
             mockMvc.perform(post("/v1/purchase-orders").contentType("application/json")
                     .header("X-Org-Id", UUID.randomUUID().toString())
-                    .header("X-User-Id", "abc")
+                    .header("X-User-Id", "u".repeat(65))
                     .header("Idempotency-Key", "k").content(BODY))
                     .andExpect(status().isUnauthorized())
                     .andExpect(jsonPath("$.code").value("AUTH_REQUIRED"));

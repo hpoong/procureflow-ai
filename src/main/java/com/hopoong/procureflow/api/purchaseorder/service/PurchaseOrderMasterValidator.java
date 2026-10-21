@@ -35,7 +35,7 @@ public class PurchaseOrderMasterValidator {
     }
 
     /** 사업장 → 창고 → 공급사 → 품목 순으로 검사한다. 조회는 모두 조직 조건을 포함한다. */
-    public void validate(UUID orgId, UUID plantId, UUID warehouseId, UUID supplierId, List<UUID> lineItemIds) {
+    public void validate(String orgId, UUID plantId, UUID warehouseId, UUID supplierId, List<UUID> lineItemIds) {
         boolean plantUsable = plantRepository.findByIdAndOrgId(plantId, orgId).filter(p -> p.isActive()).isPresent();
         if (!plantUsable) {
             throw new BusinessException(PurchaseOrderErrorCode.PLANT_NOT_AVAILABLE);
@@ -55,7 +55,7 @@ public class PurchaseOrderMasterValidator {
         validateItems(orgId, lineItemIds);
     }
 
-    private void validateItems(UUID orgId, List<UUID> lineItemIds) {
+    private void validateItems(String orgId, List<UUID> lineItemIds) {
         Set<UUID> distinct = Set.copyOf(lineItemIds);
         Map<UUID, Item> items = new HashMap<>();
         itemRepository.findAllByOrgIdAndIdIn(orgId, distinct).forEach(item -> items.put(item.getId(), item));

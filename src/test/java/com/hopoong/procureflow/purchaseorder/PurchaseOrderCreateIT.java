@@ -134,7 +134,7 @@ class PurchaseOrderCreateIT extends PostgresContainerSupport {
 
     @Test
     void rejectsUnavailableMasters() throws Exception {
-        UUID otherOrg = UUID.randomUUID();
+        String otherOrg = "org-" + UUID.randomUUID();
         Instant now = Instant.now();
         UUID inactivePlant = UUID.randomUUID();
         plants.save(Plant.create(inactivePlant, fx.orgId, "ip-" + inactivePlant.toString().substring(0, 8), "P", MasterStatus.INACTIVE, fx.userId, now));
@@ -204,7 +204,7 @@ class PurchaseOrderCreateIT extends PostgresContainerSupport {
     void rejectsSameKeyFromAnotherUser() throws Exception {
         String key = key();
         send(fx.orgId, fx.userId, key, fx.validRequest(), null).andExpect(status().isCreated());
-        send(fx.orgId, UUID.randomUUID(), key, fx.validRequest(), null)
+        send(fx.orgId, "user-" + UUID.randomUUID(), key, fx.validRequest(), null)
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("$.code").value("IDEMPOTENCY_KEY_REUSED"));
         assertThat(count("purchase_order", fx.orgId)).isEqualTo(1);
@@ -304,7 +304,7 @@ class PurchaseOrderCreateIT extends PostgresContainerSupport {
                 .andExpect(jsonPath("$.code").value(code));
     }
 
-    private void assertNoRows(UUID orgId) {
+    private void assertNoRows(String orgId) {
         assertThat(count("purchase_order", orgId)).isZero();
         assertThat(count("purchase_order_revision", orgId)).isZero();
         assertThat(count("purchase_order_command", orgId)).isZero();
@@ -314,7 +314,7 @@ class PurchaseOrderCreateIT extends PostgresContainerSupport {
                 Integer.class, orgId)).isZero();
     }
 
-    private int count(String table, UUID orgId) {
+    private int count(String table, String orgId) {
         return jdbc.queryForObject("SELECT count(*) FROM " + table + " WHERE org_id = ?", Integer.class, orgId);
     }
 
@@ -326,12 +326,12 @@ class PurchaseOrderCreateIT extends PostgresContainerSupport {
         return UUID.randomUUID().toString();
     }
 
-    private org.springframework.test.web.servlet.ResultActions send(UUID orgId, UUID userId, String key,
+    private org.springframework.test.web.servlet.ResultActions send(String orgId, String userId, String key,
             Map<String, Object> body, String requestId) throws Exception {
         var builder = post(URL)
                 .contentType("application/json")
-                .header("X-Org-Id", orgId.toString())
-                .header("X-User-Id", userId.toString())
+                .header("X-Org-Id", orgId)
+                .header("X-User-Id", userId)
                 .header("Idempotency-Key", key)
                 .content(objectMapper.writeValueAsString(body));
         if (requestId != null) {

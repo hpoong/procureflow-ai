@@ -1,7 +1,5 @@
 package com.hopoong.procureflow.common.auth;
 
-import java.util.UUID;
-
 import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.support.WebDataBinderFactory;
 import org.springframework.web.context.request.NativeWebRequest;
@@ -15,6 +13,9 @@ public class RequestActorArgumentResolver implements HandlerMethodArgumentResolv
 
     static final String ORG_HEADER = "X-Org-Id";
     static final String USER_HEADER = "X-User-Id";
+
+    /** DB 의 org_id·사용자 식별자 컬럼 길이(varchar(64))와 같아야 한다. */
+    static final int MAX_ID_LENGTH = 64;
 
     private final HeaderActorProperties properties;
 
@@ -33,17 +34,17 @@ public class RequestActorArgumentResolver implements HandlerMethodArgumentResolv
         if (!properties.enabled()) {
             throw new BusinessException(CommonErrorCode.AUTH_REQUIRED);
         }
-        return new RequestActor(parseUuid(webRequest.getHeader(ORG_HEADER)), parseUuid(webRequest.getHeader(USER_HEADER)));
+        return new RequestActor(parseId(webRequest.getHeader(ORG_HEADER)), parseId(webRequest.getHeader(USER_HEADER)));
     }
 
-    private UUID parseUuid(String value) {
+    private String parseId(String value) {
         if (value == null || value.isBlank()) {
             throw new BusinessException(CommonErrorCode.AUTH_REQUIRED);
         }
-        try {
-            return UUID.fromString(value.trim());
-        } catch (IllegalArgumentException e) {
+        String trimmed = value.trim();
+        if (trimmed.length() > MAX_ID_LENGTH) {
             throw new BusinessException(CommonErrorCode.AUTH_REQUIRED);
         }
+        return trimmed;
     }
 }

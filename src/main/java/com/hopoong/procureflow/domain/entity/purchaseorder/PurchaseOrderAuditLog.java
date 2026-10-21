@@ -38,8 +38,8 @@ public class PurchaseOrderAuditLog implements Persistable<UUID> {
     @Column(nullable = false, length = 50)
     private String action;
 
-    @Column(name = "actor_id")
-    private UUID actorId;
+    @Column(name = "actor_id", length = 64)
+    private String actorId;
 
     @Column(name = "reason_code", length = 50)
     private String reasonCode;
@@ -61,7 +61,7 @@ public class PurchaseOrderAuditLog implements Persistable<UUID> {
     @Transient
     private boolean newEntity = true;
 
-    public static PurchaseOrderAuditLog created(UUID poId, int revision, UUID actorId, String afterSnapshot,
+    public static PurchaseOrderAuditLog created(UUID poId, int revision, String actorId, String afterSnapshot,
             UUID correlationId, Instant now) {
         PurchaseOrderAuditLog log = new PurchaseOrderAuditLog();
         log.id = UUID.randomUUID();

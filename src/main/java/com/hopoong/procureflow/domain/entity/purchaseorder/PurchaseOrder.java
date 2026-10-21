@@ -30,8 +30,8 @@ public class PurchaseOrder {
     @Id
     private UUID id;
 
-    @Column(name = "org_id", nullable = false)
-    private UUID orgId;
+    @Column(name = "org_id", nullable = false, length = 64)
+    private String orgId;
 
     @Column(name = "plant_id", nullable = false)
     private UUID plantId;
@@ -84,8 +84,8 @@ public class PurchaseOrder {
     @Column(name = "sent_at")
     private Instant sentAt;
 
-    @Column(name = "created_by", nullable = false)
-    private UUID createdBy;
+    @Column(name = "created_by", nullable = false, length = 64)
+    private String createdBy;
 
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;
@@ -96,10 +96,10 @@ public class PurchaseOrder {
     @Version
     private Long version;
 
-    public static PurchaseOrder draft(UUID id, UUID orgId, UUID plantId, String poNumber, UUID supplierId,
+    public static PurchaseOrder draft(UUID id, String orgId, UUID plantId, String poNumber, UUID supplierId,
             String currency, int currencyScale, BigDecimal exchangeRate, String paymentTermsCode,
             String paymentTermsSnapshot, String incotermsCode, String incotermsPlace, UUID shipToWarehouseId,
-            UUID createdBy, Instant now) {
+            String createdBy, Instant now) {
         PurchaseOrder po = new PurchaseOrder();
         po.id = id;
         po.orgId = orgId;

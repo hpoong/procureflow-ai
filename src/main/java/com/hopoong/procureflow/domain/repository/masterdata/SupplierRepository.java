@@ -9,5 +9,5 @@ import com.hopoong.procureflow.domain.entity.masterdata.Supplier;
 
 public interface SupplierRepository extends JpaRepository<Supplier, UUID> {
 
-    Optional<Supplier> findByIdAndOrgId(UUID id, UUID orgId);
+    Optional<Supplier> findByIdAndOrgId(UUID id, String orgId);
 }

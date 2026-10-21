@@ -9,5 +9,5 @@ import com.hopoong.procureflow.domain.entity.masterdata.Warehouse;
 
 public interface WarehouseRepository extends JpaRepository<Warehouse, UUID> {
 
-    Optional<Warehouse> findByIdAndOrgId(UUID id, UUID orgId);
+    Optional<Warehouse> findByIdAndOrgId(UUID id, String orgId);
 }

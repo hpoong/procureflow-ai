@@ -11,7 +11,7 @@
 | 헤더 | 설명 |
 | --- | --- |
 | `Idempotency-Key` | 필수. 1~255자, 공백만 불가 |
-| `X-Org-Id`, `X-User-Id` | 필수(UUID). `procureflow.auth.header-actor.enabled=true` 일 때만 요청자로 해석 ([architecture](../../architecture/README.md#요청자-컨텍스트)) |
+| `X-Org-Id`, `X-User-Id` | 필수(문자열, 1~64자). `procureflow.auth.header-actor.enabled=true` 일 때만 요청자로 해석 ([architecture](../../architecture/README.md#요청자-컨텍스트)) |
 | `X-Request-Id` | 선택. UUID 면 감사 로그 `correlation_id`, 아니면 서버가 새로 만든다(거절 안 함) |
 
 | 필드 | 규칙 (위반 → 400 `INVALID_REQUEST`) |
@@ -50,7 +50,7 @@
 | 상태 | code | 조건 |
 | --- | --- | --- |
 | 400 | `INVALID_REQUEST` | 본문·헤더 검증 실패, JSON 파싱 실패, `Idempotency-Key` 누락 |
-| 401 | `AUTH_REQUIRED` | header-actor 비활성, `X-Org-Id`/`X-User-Id` 누락·UUID 아님 |
+| 401 | `AUTH_REQUIRED` | header-actor 비활성, `X-Org-Id`/`X-User-Id` 누락·공백·64자 초과 |
 | 409 | `IDEMPOTENCY_KEY_REUSED` | 같은 `(org, 명령, 키)` 가 있고 요청 해시가 다름(작성자가 다른 경우 포함) |
 | 422 | `PLANT_NOT_AVAILABLE` | 사업장 없음·다른 조직·`INACTIVE` |
 | 422 | `WAREHOUSE_NOT_AVAILABLE` | 창고 없음·다른 조직·`INACTIVE`·요청 사업장 소속 아님 |
@@ -70,7 +70,7 @@
 | `purchase_order_audit_log` | `action=CREATE`, `revision=1`, `after_snapshot`=개정의 `after_snapshot` |
 | `purchase_order_command` | `CREATE_PURCHASE_ORDER`, 요청 해시, 완료 시 `po_id`·`response_status=201` |
 
-- 저장 순서는 `purchase_order → revision → line` 으로 고정이다(연관 매핑 없이 UUID 컬럼만 매핑). 그래서 `hibernate.order_inserts` 를 켜지 않는다.
+- 저장 순서는 `purchase_order → revision → line` 으로 고정이다(연관 매핑 없이 ID 컬럼만 매핑). 그래서 `hibernate.order_inserts` 를 켜지 않는다.
 - `approval_policy_version='UNEVALUATED'` 는 정책 평가가 상신(PO-04) 시점이라 초안에는 값이 없다는 뜻이다. 상신 때 실제 버전으로 바뀐다.
 - DB DEFAULT 가 있는 컬럼도 엔티티 정적 팩토리가 값을 채운다(PostgreSQL 은 명시한 NULL 에 DEFAULT 를 적용하지 않는다).
 - 초안 생성은 `outbox_event` 를 기록하지 않는다.
@@ -93,7 +93,7 @@
 
 - 객체 키 사전순(중첩 포함), 공백 없는 compact JSON, `null` 필드 생략
 - 모든 숫자는 `stripTrailingZeros().toPlainString()` 문자열(`10`, `10.0`, `1E+1` → `"10"`)
-- UUID·날짜·enum → 문자열, 라인은 `lineNo` 순
+- UUID·날짜·enum → 문자열(조직·사용자 ID 는 원래 문자열), 라인은 `lineNo` 순
 - DB 의 jsonb 를 읽어 같은 규칙으로 재직렬화한 문자열의 SHA-256(소문자 hex 64자)이 `content_sha256` 과 같다 → 상신(PO-04) 활성화 검증의 전제
 
 ### 범위 밖 (후속)
