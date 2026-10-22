@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ProcureFlow · 발주 생성</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark">PF</span>
+      <div>
+        <div class="brand-title">ProcureFlow</div>
+        <div class="brand-sub">발주 생성</div>
+      </div>
+    </div>
+
+    <nav class="nav" aria-label="화면">
+      <a href="./index.html">기준정보</a>
+      <a href="./purchase-order.html" aria-current="page">발주 생성</a>
+    </nav>
+
+    <form id="actor-form" class="actor" autocomplete="off">
+      <label class="actor-field">
+        <span>조직 ID</span>
+        <input id="actor-org" name="orgId" maxlength="64" required placeholder="X-Org-Id">
+      </label>
+      <label class="actor-field">
+        <span>사용자 ID</span>
+        <input id="actor-user" name="userId" maxlength="64" required placeholder="X-User-Id">
+      </label>
+      <button type="submit" class="btn btn-ghost">적용</button>
+    </form>
+  </header>
+
+  <main class="po-page">
+    <div class="page-head">
+      <div>
+        <h1 class="page-title">새 발주</h1>
+        <p class="page-desc">공급사와 품목을 고르면 초안(DRAFT) 발주가 만들어집니다. 상신·승인은 이후 단계입니다.</p>
+      </div>
+      <button type="button" id="reload-master" class="btn btn-ghost">기준정보 새로고침</button>
+    </div>
+
+    <div id="master-alert" class="alert info" hidden></div>
+
+    <div class="po-layout">
+      <form id="po-form" class="po-form" novalidate>
+        <section class="card step">
+          <header class="step-head">
+            <span class="step-no">1</span>
+            <div>
+              <h2 class="card-title">거래처 · 입고지</h2>
+              <p class="card-desc">누구에게 주문하고 어디로 받을지 고릅니다. 창고는 선택한 사업장 소속만 보입니다.</p>
+            </div>
+          </header>
+          <div class="step-body grid-3">
+            <div class="field" data-key="supplierId">
+              <label class="field-label" for="f-supplierId">공급사<span class="req">*</span></label>
+              <select id="f-supplierId" class="input"></select>
+              <span class="field-error" hidden></span>
+            </div>
+            <div class="field" data-key="plantId">
+              <label class="field-label" for="f-plantId">사업장<span class="req">*</span></label>
+              <select id="f-plantId" class="input"></select>
+              <span class="field-error" hidden></span>
+            </div>
+            <div class="field" data-key="shipToWarehouseId">
+              <label class="field-label" for="f-shipToWarehouseId">입고 창고<span class="req">*</span></label>
+              <select id="f-shipToWarehouseId" class="input"></select>
+              <span class="field-error" hidden></span>
+            </div>
+          </div>
+        </section>
+
+        <section class="card step">
+          <header class="step-head">
+            <span class="step-no">2</span>
+            <div>
+              <h2 class="card-title">품목</h2>
+              <p class="card-desc">수량과 단가를 넣으면 금액이 계산됩니다. 단위·세금·납기·입고 경로는 <b>상세</b>에서 바꿉니다.</p>
+            </div>
+          </header>
+          <div class="line-table" role="table" aria-label="발주 품목">
+            <div class="line-row line-row-head" role="row">
+              <span role="columnheader">#</span>
+              <span role="columnheader">품목</span>
+              <span role="columnheader" class="num">수량</span>
+              <span role="columnheader">단위</span>
+              <span role="columnheader" class="num">단가</span>
+              <span role="columnheader" class="num">금액</span>
+              <span role="columnheader"></span>
+            </div>
+            <div id="lines"></div>
+          </div>
+          <div class="step-foot">
+            <button type="button" id="add-line" class="btn btn-dashed">+ 품목 추가</button>
+          </div>
+        </section>
+
+        <section class="card step">
+          <header class="step-head">
+            <span class="step-no">3</span>
+            <div>
+              <h2 class="card-title">거래 조건 <span class="optional">선택</span></h2>
+              <p class="card-desc">비워 두면 값 없이 저장됩니다. 통화는 단가 기준입니다.</p>
+            </div>
+          </header>
+          <div class="step-body grid-3">
+            <div class="field" data-key="currency">
+              <label class="field-label" for="f-currency">통화<span class="req">*</span></label>
+              <input id="f-currency" class="input mono" maxlength="3" value="KRW" autocomplete="off">
+              <span class="field-error" hidden></span>
+            </div>
+            <div class="field" data-key="exchangeRate">
+              <label class="field-label" for="f-exchangeRate">환율</label>
+              <input id="f-exchangeRate" class="input mono" inputmode="decimal" placeholder="예) 1350.5" autocomplete="off">
+              <span class="field-error" hidden></span>
+            </div>
+            <div class="field" data-key="paymentTermsCode">
+              <label class="field-label" for="f-paymentTermsCode">결제 조건</label>
+              <input id="f-paymentTermsCode" class="input mono" maxlength="50" placeholder="예) NET30" autocomplete="off">
+              <span class="field-error" hidden></span>
+            </div>
+            <div class="field" data-key="incotermsCode">
+              <label class="field-label" for="f-incotermsCode">인코텀즈</label>
+              <input id="f-incotermsCode" class="input mono" maxlength="10" placeholder="예) FOB" autocomplete="off">
+              <span class="field-error" hidden></span>
+            </div>
+            <div class="field span-2" data-key="incotermsPlace">
+              <label class="field-label" for="f-incotermsPlace">인코텀즈 장소</label>
+              <input id="f-incotermsPlace" class="input" maxlength="255" placeholder="예) 부산항" autocomplete="off">
+              <span class="field-error" hidden></span>
+            </div>
+            <div class="field span-all" data-key="paymentTermsSnapshot">
+              <label class="field-label" for="f-paymentTermsSnapshot">결제 조건 상세 (JSON)</label>
+              <textarea id="f-paymentTermsSnapshot" class="input mono" rows="2" placeholder='예) {"days": 30, "method": "TT"}'></textarea>
+              <span class="field-error" hidden></span>
+            </div>
+          </div>
+        </section>
+      </form>
+
+      <aside class="po-aside">
+        <section class="card summary">
+          <h2 class="card-title">발주 요약</h2>
+          <dl class="summary-list">
+            <div><dt>공급사</dt><dd id="sum-supplier">-</dd></div>
+            <div><dt>입고지</dt><dd id="sum-shipto">-</dd></div>
+            <div><dt>품목</dt><dd id="sum-lines">-</dd></div>
+          </dl>
+          <dl class="summary-list amounts">
+            <div><dt>공급가액</dt><dd id="sum-net" class="num">-</dd></div>
+            <div><dt>세액</dt><dd id="sum-tax" class="num">-</dd></div>
+            <div class="total"><dt>합계</dt><dd id="sum-total" class="num">-</dd></div>
+          </dl>
+          <div id="form-alert" class="alert" role="alert" hidden></div>
+          <button type="submit" form="po-form" id="submit-btn" class="btn btn-primary btn-block">발주 생성</button>
+          <button type="button" id="reset-btn" class="btn btn-ghost btn-block">처음부터 다시</button>
+        </section>
+
+        <section class="card recent">
+          <div class="recent-head">
+            <h2 class="card-title">최근 생성한 발주</h2>
+            <span class="card-desc">이 탭에서만 보관</span>
+          </div>
+          <div id="results"></div>
+          <div id="results-empty" class="empty small">아직 생성한 발주가 없습니다.</div>
+        </section>
+      </aside>
+    </div>
+  </main>
+
+  <div id="toasts" class="toasts" aria-live="polite"></div>
+
+  <script type="module" src="./purchase-order.js"></script>
+</body>
+</html>

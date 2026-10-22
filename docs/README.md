@@ -16,7 +16,7 @@ docs/
 ├── guides/                   ← How-to (로컬·연동·작업 절차)
 │   ├── local-db.md
 │   ├── swagger.md
-│   └── front.md              ← 기준정보 화면 (front/)
+│   └── front.md              ← 기준정보·발주 생성 화면 (front/)
 
 ├── decisions/                ← ADR (왜 이렇게 했는지)
 │   └── .keep
