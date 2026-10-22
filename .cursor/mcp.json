@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "procureflow-postgres": {
+      "command": "npx",
+      "args": ["-y", "@henkey/postgres-mcp-server"],
+      "env": {
+        "POSTGRES_CONNECTION_STRING": "postgresql://procureflow:procureflow@localhost:5432/procureflow"
+      }
+    }
+  }
+}

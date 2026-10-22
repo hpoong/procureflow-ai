@@ -102,3 +102,7 @@ DELETE FROM purchase_order           WHERE org_id IN ('Org-001', 'Org-002');
 - 형식: `src/main/resources/spy.properties` 의 `logMessageFormat` → `config/P6SpySqlFormatter`, 시각은 `dateformat`. 첫 줄에 시각·소요 ms·category·connection, 다음 줄부터 Hibernate 포맷터(`FormatStyle.BASIC`, DDL 은 `DDL`)로 줄바꿈·들여쓰기한 SQL
 
 Hibernate `show-sql` / bind TRACE만으로는 완성 SQL이 한눈에 안 나오므로 로컬에서는 p6spy를 쓴다.
+
+## DB MCP (Cursor)
+
+`.cursor/mcp.json` 의 `procureflow-postgres` 가 `@henkey/postgres-mcp-server`(npx)로 로컬 DB(`docker-compose.yml` 계정)에 붙는다. Cursor 설정 → MCP 에서 켜고, Node 18 이상이 필요하다. 조회뿐 아니라 쓰기·DDL 도구도 열려 있으므로 local DB 에만 연결한다.
