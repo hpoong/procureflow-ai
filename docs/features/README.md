@@ -5,4 +5,4 @@
 | 도메인 | 문서 | 주제 |
 | --- | --- | --- |
 | `purchaseorder` | [purchaseorder](purchaseorder/README.md) | purchaseorder(발주).초안 생성 |
-| `masterdata` | [masterdata](masterdata/README.md) | masterdata(기준정보).최소 마스터 |
+| `masterdata` | [masterdata](masterdata/README.md) | masterdata(기준정보).최소 마스터, masterdata(기준정보).등록·목록 API |

@@ -33,7 +33,7 @@ docker compose up -d
 
 ## 로컬 QA 시드
 
-마스터 관리 API 가 없어 SQL 로 넣는다(local 전용, Flyway 에 넣지 않음). 조직·사용자는 문자열 ID, 마스터는 UUID 다. 고정값:
+아래 고정 ID 가 필요하면 SQL 로 넣는다(local 전용, Flyway 에 넣지 않음). 임의 데이터는 [기준정보 화면](front.md)이나 `/v1/plants` 등 등록 API 로 넣어도 된다(ID 는 서버가 만든다). 조직·사용자는 문자열 ID, 마스터는 UUID 다. 고정값:
 
 | 구분 | ID | code / 상태 |
 | --- | --- | --- |
