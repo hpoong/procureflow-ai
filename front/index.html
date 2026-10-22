@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ProcureFlow · 기준정보 관리</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark">PF</span>
+      <div>
+        <div class="brand-title">ProcureFlow</div>
+        <div class="brand-sub">기준정보 관리</div>
+      </div>
+    </div>
+
+    <form id="actor-form" class="actor" autocomplete="off">
+      <label class="actor-field">
+        <span>조직 ID</span>
+        <input id="actor-org" name="orgId" maxlength="64" required placeholder="X-Org-Id">
+      </label>
+      <label class="actor-field">
+        <span>사용자 ID</span>
+        <input id="actor-user" name="userId" maxlength="64" required placeholder="X-User-Id">
+      </label>
+      <button type="submit" class="btn btn-ghost">적용</button>
+    </form>
+  </header>
+
+  <nav id="tabs" class="tabs" role="tablist" aria-label="기준정보 종류"></nav>
+
+  <main class="layout">
+    <section class="card form-card" aria-labelledby="form-title">
+      <div class="card-head">
+        <div>
+          <h2 id="form-title" class="card-title"></h2>
+          <p id="form-desc" class="card-desc"></p>
+        </div>
+      </div>
+      <form id="create-form" class="create-form" novalidate>
+        <div id="form-fields" class="fields"></div>
+        <div id="form-alert" class="alert" role="alert" hidden></div>
+        <div class="form-actions">
+          <button type="reset" class="btn btn-ghost">초기화</button>
+          <button type="submit" id="submit-btn" class="btn btn-primary">등록</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="card list-card" aria-labelledby="list-title">
+      <div class="card-head">
+        <div>
+          <h2 id="list-title" class="card-title"></h2>
+          <p id="list-count" class="card-desc"></p>
+        </div>
+        <div class="toolbar">
+          <input id="search" type="search" class="input" placeholder="코드·이름 검색">
+          <select id="status-filter" class="input">
+            <option value="">전체 상태</option>
+            <option value="ACTIVE">활성</option>
+            <option value="INACTIVE">비활성</option>
+          </select>
+          <button type="button" id="refresh-btn" class="btn btn-ghost" title="새로고침">새로고침</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table class="table">
+          <thead id="list-head"></thead>
+          <tbody id="list-body"></tbody>
+        </table>
+        <div id="list-empty" class="empty" hidden></div>
+      </div>
+    </section>
+  </main>
+
+  <div id="toasts" class="toasts" aria-live="polite"></div>
+
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
