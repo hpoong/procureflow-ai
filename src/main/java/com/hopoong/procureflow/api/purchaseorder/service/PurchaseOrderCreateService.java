@@ -36,6 +36,7 @@ public class PurchaseOrderCreateService {
 
     private static final int CREATED_STATUS = 201;
 
+    private final PurchaseOrderTermsValidator termsValidator;
     private final PurchaseOrderMasterValidator masterValidator;
     private final PurchaseOrderNumberGenerator numberGenerator;
     private final PurchaseOrderSnapshotWriter snapshotWriter;
@@ -47,11 +48,13 @@ public class PurchaseOrderCreateService {
     private final ObjectMapper objectMapper;
     private final Clock clock;
 
-    public PurchaseOrderCreateService(PurchaseOrderMasterValidator masterValidator,
+    public PurchaseOrderCreateService(PurchaseOrderTermsValidator termsValidator,
+            PurchaseOrderMasterValidator masterValidator,
             PurchaseOrderNumberGenerator numberGenerator, PurchaseOrderSnapshotWriter snapshotWriter,
             PurchaseOrderRepository purchaseOrderRepository, PurchaseOrderRevisionRepository revisionRepository,
             PurchaseOrderLineRepository lineRepository, PurchaseOrderCommandRepository commandRepository,
             PurchaseOrderAuditLogRepository auditLogRepository, ObjectMapper objectMapper, Clock clock) {
+        this.termsValidator = termsValidator;
         this.masterValidator = masterValidator;
         this.numberGenerator = numberGenerator;
         this.snapshotWriter = snapshotWriter;
@@ -67,6 +70,9 @@ public class PurchaseOrderCreateService {
     @Transactional
     public PurchaseOrderCreatedResponse create(RequestActor actor, String idempotencyKey, String requestSha256,
             UUID correlationId, CreatePurchaseOrderRequest request) {
+        int currencyScale = Currency.getInstance(request.currency()).getDefaultFractionDigits();
+        termsValidator.validate(currencyScale,
+                request.lines().stream().map(CreatePurchaseOrderLineRequest::unitPrice).toList());
         masterValidator.validate(actor.orgId(), request.plantId(), request.shipToWarehouseId(), request.supplierId(),
                 request.lines().stream().map(CreatePurchaseOrderLineRequest::itemId).toList());
 
@@ -78,7 +84,7 @@ public class PurchaseOrderCreateService {
 
         PurchaseOrder po = PurchaseOrder.draft(UUID.randomUUID(), actor.orgId(), request.plantId(),
                 numberGenerator.next(), request.supplierId(), request.currency(),
-                Currency.getInstance(request.currency()).getDefaultFractionDigits(), request.exchangeRate(),
+                currencyScale, request.exchangeRate(),
                 request.paymentTermsCode(), toJson(request), request.incotermsCode(), request.incotermsPlace(),
                 request.shipToWarehouseId(), actor.userId(), now);
         List<PurchaseOrderLine> lines = buildLines(po.getId(), request, now);

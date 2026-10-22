@@ -107,6 +107,27 @@ public class PurchaseOrderRevision implements Persistable<UUID> {
         return revision;
     }
 
+    public static PurchaseOrderRevision draft(PurchaseOrder po, int revisionNo, String changeReasonCode,
+            String changeReasonDetail, String beforeSnapshot, String afterSnapshot, String contentSha256,
+            String createdBy, Instant now) {
+        PurchaseOrderRevision revision = new PurchaseOrderRevision();
+        revision.id = UUID.randomUUID();
+        revision.poId = po.getId();
+        revision.orgId = po.getOrgId();
+        revision.poNumber = po.getPoNumber();
+        revision.revision = revisionNo;
+        revision.revisionStatus = RevisionStatus.DRAFT;
+        revision.approvalPolicyVersion = UNEVALUATED_POLICY_VERSION;
+        revision.changeReasonCode = changeReasonCode;
+        revision.changeReasonDetail = changeReasonDetail;
+        revision.beforeSnapshot = beforeSnapshot;
+        revision.afterSnapshot = afterSnapshot;
+        revision.contentSha256 = contentSha256;
+        revision.createdBy = createdBy;
+        revision.createdAt = now;
+        return revision;
+    }
+
     @Override
     public boolean isNew() {
         return newEntity;

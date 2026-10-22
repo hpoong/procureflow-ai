@@ -111,6 +111,8 @@ class PurchaseOrderCreateIT extends PostgresContainerSupport {
         assertThat(audit.get("revision")).isEqualTo(1);
         assertThat(audit.get("actor_id")).isEqualTo(fx.userId);
         assertThat(audit.get("correlation_id")).isEqualTo(requestId);
+        assertThat(jdbc.queryForObject("SELECT po_revision_id FROM purchase_order_command WHERE po_id = ?",
+                Object.class, poId)).isNull();
 
         // TEST-07(c): 저장된 스냅샷을 canonical 로 재직렬화하면 해시와 같다.
         String stored = jdbc.queryForObject("SELECT after_snapshot::text FROM purchase_order_revision WHERE po_id = ?",
@@ -239,6 +241,93 @@ class PurchaseOrderCreateIT extends PostgresContainerSupport {
         assertThat(numbers).hasSize(3).doesNotHaveDuplicates().allMatch(n -> n.matches("^PO-\\d{8}-\\d{8,}$"));
         String today = java.time.LocalDate.now(java.time.ZoneOffset.UTC).format(java.time.format.DateTimeFormatter.BASIC_ISO_DATE);
         assertThat(numbers).allMatch(n -> n.startsWith("PO-" + today + "-"));
+    }
+
+    @Test
+    void rejectsUnitPriceOverCurrencyScale() throws Exception {
+        Map<String, Object> body = fx.validRequest();
+        lines(body).get(1).put("unitPrice", "1500.5");
+
+        send(fx.orgId, fx.userId, key(), body, null)
+                .andExpect(status().isUnprocessableContent())
+                .andExpect(jsonPath("$.code").value("PRICE_PRECISION_INVALID"))
+                .andExpect(jsonPath("$.message").value(org.hamcrest.Matchers.endsWith("lineNo=[2]")));
+        assertNoRows(fx.orgId);
+    }
+
+    @Test
+    void checksPricePrecisionBeforeMasters() throws Exception {
+        UUID inactiveWarehouse = UUID.randomUUID();
+        warehouses.save(Warehouse.create(inactiveWarehouse, fx.orgId, fx.plantId, "iw-" + inactiveWarehouse.toString().substring(0, 8), "W",
+                MasterStatus.INACTIVE, fx.userId, Instant.now()));
+        Map<String, Object> body = with("shipToWarehouseId", inactiveWarehouse);
+        lines(body).get(0).put("unitPrice", "1500.5");
+
+        expect422(body, "PRICE_PRECISION_INVALID");
+    }
+
+    @Test
+    void keepsTermsAsRequested() throws Exception {
+        Map<String, Object> body = fx.validRequest();
+        body.put("exchangeRate", "1.5");
+        lines(body).get(0).put("requestedDate", "2026-11-10");
+        lines(body).get(0).put("promisedDate", "2026-11-01");
+
+        String poId = idOf(send(fx.orgId, fx.userId, key(), body, null).andExpect(status().isCreated()).andReturn());
+
+        Map<String, Object> po = jdbc.queryForMap("SELECT * FROM purchase_order WHERE id = ?::uuid", poId);
+        assertThat((java.math.BigDecimal) po.get("exchange_rate")).isEqualByComparingTo("1.5");
+        assertThat(((Number) po.get("currency_scale")).intValue()).isZero();
+        Map<String, Object> line = jdbc.queryForMap(
+                "SELECT * FROM purchase_order_line WHERE po_id = ?::uuid AND line_no = 1", poId);
+        assertThat((java.math.BigDecimal) line.get("tax_rate")).isEqualByComparingTo("0.1");
+        assertThat(line.get("tax_code")).isEqualTo("VAT10");
+        assertThat(line.get("purchase_uom")).isEqualTo("EA");
+        assertThat(line.get("inventory_uom")).isEqualTo("EA");
+        assertThat(line.get("requested_date").toString()).isEqualTo("2026-11-10");
+        assertThat(line.get("promised_date").toString()).isEqualTo("2026-11-01");
+
+        JsonNode snapshot = objectMapper.readTree(jdbc.queryForObject(
+                "SELECT after_snapshot::text FROM purchase_order_revision WHERE po_id = ?::uuid", String.class, poId));
+        assertThat(snapshot.get("header").get("exchangeRate").asString()).isEqualTo("1.5");
+        assertThat(snapshot.get("header").get("currencyScale").asString()).isEqualTo("0");
+        JsonNode first = snapshot.get("lines").get(0);
+        assertThat(first.get("taxCode").asString()).isEqualTo("VAT10");
+        assertThat(first.get("taxRate").asString()).isEqualTo("0.1");
+        assertThat(first.get("unitPrice").asString()).isEqualTo("1500");
+        assertThat(first.get("conversionNumerator").asString()).isEqualTo("1");
+        assertThat(first.get("conversionDenominator").asString()).isEqualTo("1");
+        assertThat(first.get("requestedDate").asString()).isEqualTo("2026-11-10");
+        assertThat(first.get("promisedDate").asString()).isEqualTo("2026-11-01");
+    }
+
+    @Test
+    void sameKeyWithPrecisionViolationAfterSuccessIsConflict() throws Exception {
+        String key = key();
+        send(fx.orgId, fx.userId, key, fx.validRequest(), null).andExpect(status().isCreated());
+        Map<String, Object> invalid = fx.validRequest();
+        lines(invalid).get(0).put("unitPrice", "1500.5");
+
+        send(fx.orgId, fx.userId, key, invalid, null)
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.code").value("IDEMPOTENCY_KEY_REUSED"));
+        assertThat(count("purchase_order_command", fx.orgId)).isEqualTo(1);
+    }
+
+    @Test
+    void sameKeyAfterPrecisionRejectionIsProcessedAgain() throws Exception {
+        String key = key();
+        Map<String, Object> invalid = fx.validRequest();
+        lines(invalid).get(0).put("unitPrice", "1500.5");
+        send(fx.orgId, fx.userId, key, invalid, null).andExpect(status().isUnprocessableContent());
+
+        send(fx.orgId, fx.userId, key, fx.validRequest(), null).andExpect(status().isCreated());
+        assertThat(count("purchase_order_command", fx.orgId)).isEqualTo(1);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static List<Map<String, Object>> lines(Map<String, Object> body) {
+        return (List<Map<String, Object>>) body.get("lines");
     }
 
     private List<String> runConcurrentlyNumbers(int n) throws Exception {

@@ -121,4 +121,9 @@ public class PurchaseOrder {
         po.updatedAt = now;
         return po;
     }
+
+    /** 개정 초안이 생겨도 현재 유효본은 그대로 두고, version 증가로 동시 개정을 막는다. */
+    public void markRevised(Instant now) {
+        this.updatedAt = now;
+    }
 }

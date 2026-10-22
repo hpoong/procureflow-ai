@@ -47,6 +47,9 @@ public class PurchaseOrderCommand implements Persistable<UUID> {
     @Column(name = "po_id")
     private UUID poId;
 
+    @Column(name = "po_revision_id")
+    private UUID poRevisionId;
+
     @Column(name = "response_status")
     private Integer responseStatus;
 
@@ -75,6 +78,11 @@ public class PurchaseOrderCommand implements Persistable<UUID> {
         this.poId = poId;
         this.responseStatus = responseStatus;
         this.completedAt = now;
+    }
+
+    public void complete(UUID poId, UUID poRevisionId, int responseStatus, Instant now) {
+        this.poRevisionId = poRevisionId;
+        complete(poId, responseStatus, now);
     }
 
     @Override

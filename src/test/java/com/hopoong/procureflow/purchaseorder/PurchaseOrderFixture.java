@@ -60,7 +60,7 @@ final class PurchaseOrderFixture {
         line.put("inventoryUom", "EA");
         line.put("conversionNumerator", 1);
         line.put("conversionDenominator", 1);
-        line.put("unitPrice", "1500.5");
+        line.put("unitPrice", "1500");
         line.put("taxCode", "VAT10");
         line.put("taxRate", "0.1");
         line.put("receiptRouting", routing);

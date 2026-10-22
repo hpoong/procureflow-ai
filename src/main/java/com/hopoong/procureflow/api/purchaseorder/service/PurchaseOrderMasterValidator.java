@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -40,13 +41,7 @@ public class PurchaseOrderMasterValidator {
         if (!plantUsable) {
             throw new BusinessException(PurchaseOrderErrorCode.PLANT_NOT_AVAILABLE);
         }
-        boolean warehouseUsable = warehouseRepository.findByIdAndOrgId(warehouseId, orgId)
-                .filter(Warehouse::isActive)
-                .filter(w -> plantId.equals(w.getPlantId()))
-                .isPresent();
-        if (!warehouseUsable) {
-            throw new BusinessException(PurchaseOrderErrorCode.WAREHOUSE_NOT_AVAILABLE);
-        }
+        validateWarehouse(orgId, plantId, warehouseId);
         boolean supplierUsable = supplierRepository.findByIdAndOrgId(supplierId, orgId).filter(s -> s.isActive())
                 .isPresent();
         if (!supplierUsable) {
@@ -55,12 +50,41 @@ public class PurchaseOrderMasterValidator {
         validateItems(orgId, lineItemIds);
     }
 
+    /**
+     * 개정에서 바뀌는 마스터만 검사한다. 공급사·사업장·기존 라인 품목은 개정 불가라 다시 보지 않는다.
+     *
+     * @param changedWarehouseId 현재와 다를 때만 값, 같으면 null
+     * @param lineItemIds 요청 lines 순서. 신규 라인만 품목 ID, 기존 라인은 null (message lineNo 는 요청 순번)
+     */
+    public void validateRevision(String orgId, UUID plantId, UUID changedWarehouseId, List<UUID> lineItemIds) {
+        if (changedWarehouseId != null) {
+            validateWarehouse(orgId, plantId, changedWarehouseId);
+        }
+        validateItems(orgId, lineItemIds);
+    }
+
+    private void validateWarehouse(String orgId, UUID plantId, UUID warehouseId) {
+        boolean warehouseUsable = warehouseRepository.findByIdAndOrgId(warehouseId, orgId)
+                .filter(Warehouse::isActive)
+                .filter(w -> plantId.equals(w.getPlantId()))
+                .isPresent();
+        if (!warehouseUsable) {
+            throw new BusinessException(PurchaseOrderErrorCode.WAREHOUSE_NOT_AVAILABLE);
+        }
+    }
+
     private void validateItems(String orgId, List<UUID> lineItemIds) {
-        Set<UUID> distinct = Set.copyOf(lineItemIds);
+        Set<UUID> distinct = lineItemIds.stream().filter(Objects::nonNull).collect(Collectors.toSet());
+        if (distinct.isEmpty()) {
+            return;
+        }
         Map<UUID, Item> items = new HashMap<>();
         itemRepository.findAllByOrgIdAndIdIn(orgId, distinct).forEach(item -> items.put(item.getId(), item));
         List<Integer> invalidLineNos = new ArrayList<>();
         for (int i = 0; i < lineItemIds.size(); i++) {
+            if (lineItemIds.get(i) == null) {
+                continue;
+            }
             Item item = items.get(lineItemIds.get(i));
             if (item == null || !item.isPurchasable()) {
                 invalidLineNos.add(i + 1);

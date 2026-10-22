@@ -25,7 +25,7 @@ docker compose up -d
 - 스크립트: `src/main/resources/db/migration/V{version}__{desc}.sql`
 - 이미 적용된 파일은 수정하지 않는다. 변경은 새 버전 파일로 추가한다.
 - JPA `ddl-auto`는 `validate`다. 테이블 변경은 Flyway로만 한다.
-- 현재 버전: V1 baseline, V2 발주 스키마, V3 마스터 최소 테이블(`plant`·`warehouse`·`supplier`·`item`), V4 발주 번호 시퀀스(`po_number_seq`), V5 조직·사용자 식별자 컬럼 `uuid` → `varchar(64)`.
+- 현재 버전: V1 baseline, V2 발주 스키마, V3 마스터 최소 테이블(`plant`·`warehouse`·`supplier`·`item`), V4 발주 번호 시퀀스(`po_number_seq`), V5 조직·사용자 식별자 컬럼 `uuid` → `varchar(64)`, V6 `purchase_order_command.po_revision_id`(개정 단위 명령 재생용, nullable).
 
 ## 임시 요청자 헤더
 
@@ -78,7 +78,29 @@ VALUES ('40000000-0000-0000-0000-000000000001', 'Org-001', 'qa-item-01', 'QA Ite
 ON CONFLICT (id) DO NOTHING;
 ```
 
-정리(FK 역순, QA 조직 O1·O2 의 발주만. 마스터 시드는 남긴다). 사용자가 local DB 에서 직접 실행한다.
+### 승인 상태 local 시드
+
+승인 API(PO-04)가 없어 개정 초안 작성(PO-02)을 해 보려면 SQL 로 발주를 `APPROVED` 로 만든다. QA 조직 O1 발주만, `version` 은 바꾸지 않는다(`expectedVersion` 은 조회한 `version` 그대로).
+
+```sql
+UPDATE purchase_order SET status = 'APPROVED'
+WHERE id = '<poId>' AND org_id = 'Org-001';
+UPDATE purchase_order_revision SET revision_status = 'APPROVED'
+WHERE po_id = '<poId>' AND org_id = 'Org-001' AND revision = 1;
+```
+
+### 진행 중 개정 정리
+
+진행 중(`DRAFT`·`PENDING_APPROVAL`) 개정은 발주당 1개이고, 취소 API 는 PO-04 전까지 없다. 잘못 만든 개정 초안은 local 에서 SQL 로 닫는다(행은 감사·멱등 재생 참조 때문에 지우지 않는다).
+
+```sql
+UPDATE purchase_order_revision SET revision_status = 'CANCELLED'
+WHERE po_id = '<poId>' AND org_id = 'Org-001' AND revision_status = 'DRAFT';
+```
+
+### 정리
+
+정리(FK 역순, QA 조직 O1·O2 의 발주만. 마스터 시드는 남긴다). 사용자가 local DB 에서 직접 실행한다. `purchase_order_command.po_revision_id`(V6)가 개정을 참조하므로 `command` 를 `revision` 보다 먼저 지운다.
 
 ```sql
 DELETE FROM purchase_order_audit_log WHERE po_id IN (SELECT id FROM purchase_order WHERE org_id IN ('Org-001', 'Org-002'));

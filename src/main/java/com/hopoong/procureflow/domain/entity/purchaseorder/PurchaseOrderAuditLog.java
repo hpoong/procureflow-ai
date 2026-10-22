@@ -26,6 +26,7 @@ import lombok.NoArgsConstructor;
 public class PurchaseOrderAuditLog implements Persistable<UUID> {
 
     private static final String ACTION_CREATE = "CREATE";
+    private static final String ACTION_REVISION_CREATE = "REVISION_CREATE";
 
     @Id
     private UUID id;
@@ -69,6 +70,22 @@ public class PurchaseOrderAuditLog implements Persistable<UUID> {
         log.revision = revision;
         log.action = ACTION_CREATE;
         log.actorId = actorId;
+        log.afterSnapshot = afterSnapshot;
+        log.occurredAt = now;
+        log.correlationId = correlationId;
+        return log;
+    }
+
+    public static PurchaseOrderAuditLog revisionCreated(UUID poId, int revision, String actorId, String reasonCode,
+            String beforeSnapshot, String afterSnapshot, UUID correlationId, Instant now) {
+        PurchaseOrderAuditLog log = new PurchaseOrderAuditLog();
+        log.id = UUID.randomUUID();
+        log.poId = poId;
+        log.revision = revision;
+        log.action = ACTION_REVISION_CREATE;
+        log.actorId = actorId;
+        log.reasonCode = reasonCode;
+        log.beforeSnapshot = beforeSnapshot;
         log.afterSnapshot = afterSnapshot;
         log.occurredAt = now;
         log.correlationId = correlationId;

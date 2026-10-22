@@ -14,6 +14,7 @@ import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -55,6 +56,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MissingRequestHeaderException.class)
     public ResponseEntity<ErrorResponse> handleMissingHeader(MissingRequestHeaderException e) {
         return invalid(List.of(e.getHeaderName() + ": 필수 헤더입니다"));
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ErrorResponse> handleTypeMismatch(MethodArgumentTypeMismatchException e) {
+        return invalid(List.of(e.getName() + ": 형식이 올바르지 않습니다"));
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
