@@ -10,6 +10,7 @@
 | 작업 | 문서 |
 | --- | --- |
 | Java 이름·스타일 | [code](code/README.md) |
+| 주석·문서화·DTO 검증 | [comment](comment/README.md) |
 | 패키지·계층·트랜잭션 | [spring](spring/README.md) |
 | REST API·컨트롤러 | [endpoint](endpoint/README.md) |
 | 응답·에러 | [response](response/README.md) |
