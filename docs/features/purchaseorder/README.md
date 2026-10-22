@@ -4,7 +4,7 @@
 
 ## purchaseorder(발주).초안 생성
 
-`POST /v1/purchase-orders` — 공급사·품목·사업장·창고를 검증한 `DRAFT` 발주 1건과 라인 N건을 한 트랜잭션에 저장한다.
+`POST /v1/purchase-orders` — 공급사·품목·사업장·창고를 검증한 `DRAFT` 발주 1건과 라인 N건을 한 트랜잭션에 저장한다. 테이블별 저장 흐름 요약은 [PO-01](PO-01/README.md).
 
 ### 요청
 
