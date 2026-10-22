@@ -14,4 +14,8 @@ public interface ItemRepository extends JpaRepository<Item, UUID> {
     Optional<Item> findByIdAndOrgId(UUID id, String orgId);
 
     List<Item> findAllByOrgIdAndIdIn(String orgId, Collection<UUID> ids);
+
+    boolean existsByOrgIdAndItemCode(String orgId, String itemCode);
+
+    List<Item> findAllByOrgIdOrderByItemCode(String orgId);
 }
