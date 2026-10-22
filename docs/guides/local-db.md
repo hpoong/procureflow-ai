@@ -97,7 +97,8 @@ DELETE FROM purchase_order           WHERE org_id IN ('Org-001', 'Org-002');
 로컬은 **p6spy**로 `?`가 **실제 값으로 치환된 SQL**을 출력한다.
 
 - 의존성: `com.github.gavlyukovskiy:p6spy-spring-boot-starter`
-- `application-local.yaml`: `decorator.datasource.p6spy.enable-logging=true`, `multiline=true`
+- `application-local.yaml`: `decorator.datasource.p6spy.enable-logging=true`, `logging=sysout`
 - 기본(`application.yaml`)은 `enable-logging=false` (운영 유출 방지)
+- 형식: `src/main/resources/spy.properties` 의 `logMessageFormat` → `config/P6SpySqlFormatter`, 시각은 `dateformat`. 첫 줄에 시각·소요 ms·category·connection, 다음 줄부터 Hibernate 포맷터(`FormatStyle.BASIC`, DDL 은 `DDL`)로 줄바꿈·들여쓰기한 SQL
 
 Hibernate `show-sql` / bind TRACE만으로는 완성 SQL이 한눈에 안 나오므로 로컬에서는 p6spy를 쓴다.

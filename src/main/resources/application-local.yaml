@@ -17,12 +17,11 @@ springdoc:
     enabled: true
     path: /swagger-ui.html
 
-# p6spy: ? 가 실제 값으로 치환된 SQL을 멀티라인으로 출력
+# p6spy: ? 가 실제 값으로 치환된 SQL을 줄바꿈·들여쓰기해 출력 (형식은 spy.properties)
 decorator:
   datasource:
     p6spy:
       enable-logging: true
-      multiline: true
       logging: sysout
 
 logging:
