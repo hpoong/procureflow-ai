@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ProcureFlow · 발주 개정</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark">PF</span>
+      <div><div class="brand-title">ProcureFlow</div><div class="brand-sub">발주 개정</div></div>
+    </div>
+    <nav class="nav" aria-label="화면">
+      <a href="./index.html">기준정보</a>
+      <a href="./purchase-order.html">발주 생성</a>
+      <a href="./purchase-order-revision.html" aria-current="page">발주 개정</a>
+    </nav>
+    <form id="actor-form" class="actor" autocomplete="off">
+      <label class="actor-field"><span>조직 ID</span><input id="actor-org" maxlength="64" required></label>
+      <label class="actor-field"><span>사용자 ID</span><input id="actor-user" maxlength="64" required></label>
+      <button type="submit" class="btn btn-ghost">적용</button>
+    </form>
+  </header>
+
+  <main class="po-page revision-page">
+    <div class="page-head">
+      <div>
+        <h1 class="page-title">발주 개정</h1>
+        <p class="page-desc">승인된 발주의 변경안을 작성하고, 개정별 변경 전·후 내용을 확인합니다.</p>
+      </div>
+    </div>
+
+    <section class="card revision-lookup" aria-labelledby="lookup-title">
+      <div>
+        <h2 id="lookup-title" class="card-title">발주 불러오기</h2>
+        <p class="card-desc">발주 조회·목록 API가 아직 없어 발주 ID를 직접 입력합니다.</p>
+      </div>
+      <form id="lookup-form" class="lookup-form">
+        <label class="field lookup-id" data-key="poId">
+          <span class="field-label">발주 ID<span class="req">*</span></span>
+          <input id="po-id" class="input mono" required placeholder="UUID">
+          <span class="field-error" hidden></span>
+        </label>
+        <button id="lookup-btn" type="submit" class="btn btn-primary">이력 조회</button>
+      </form>
+      <div id="lookup-alert" class="alert" role="alert" hidden></div>
+    </section>
+
+    <div id="revision-workspace" class="revision-workspace" hidden>
+      <section class="card revision-history" aria-labelledby="history-title">
+        <div class="card-head">
+          <div>
+            <h2 id="history-title" class="card-title">개정 이력</h2>
+            <p id="po-meta" class="card-desc"></p>
+          </div>
+          <button id="refresh-history" type="button" class="btn btn-ghost btn-sm">새로고침</button>
+        </div>
+        <div id="revision-list" class="revision-list"></div>
+      </section>
+
+      <section class="card revision-detail" aria-labelledby="detail-title">
+        <div class="card-head">
+          <div>
+            <h2 id="detail-title" class="card-title">개정 상세</h2>
+            <p id="detail-meta" class="card-desc">이력에서 개정을 선택하세요.</p>
+          </div>
+        </div>
+        <div id="detail-empty" class="empty small">선택한 개정의 변경 전·후 내용을 표시합니다.</div>
+        <div id="detail-content" hidden>
+          <div id="detail-summary" class="snapshot-summary"></div>
+          <div class="snapshot-grid">
+            <article><h3>변경 전</h3><div id="before-snapshot"></div></article>
+            <article><h3>변경 후</h3><div id="after-snapshot"></div></article>
+          </div>
+        </div>
+      </section>
+
+      <form id="revision-form" class="revision-form" novalidate>
+        <section class="card step">
+          <header class="step-head"><span class="step-no">1</span><div>
+            <h2 class="card-title">개정 사유 · 동시성 기준</h2>
+            <p class="card-desc">현재 유효 개정을 기준으로 변경안을 만듭니다. 발주 version은 조회 API에서 제공하지 않아 직접 입력해야 합니다.</p>
+          </div></header>
+          <div class="step-body grid-3">
+            <div class="field" data-key="expectedVersion"><label class="field-label" for="f-expectedVersion">발주 version<span class="req">*</span></label><input id="f-expectedVersion" class="input mono" inputmode="numeric" placeholder="0 이상의 정수"><span class="field-error" hidden></span></div>
+            <div class="field" data-key="changeReasonCode"><label class="field-label" for="f-changeReasonCode">사유 코드<span class="req">*</span></label><input id="f-changeReasonCode" class="input mono" maxlength="50" placeholder="예) QTY_CHANGE"><span class="field-error" hidden></span></div>
+            <div class="field" data-key="changeReasonDetail"><label class="field-label" for="f-changeReasonDetail">상세 사유</label><input id="f-changeReasonDetail" class="input" maxlength="1000" placeholder="변경 배경을 입력하세요"><span class="field-error" hidden></span></div>
+          </div>
+        </section>
+
+        <section class="card step">
+          <header class="step-head"><span class="step-no">2</span><div>
+            <h2 class="card-title">입고지 · 거래 조건</h2>
+            <p class="card-desc">공급사·사업장·통화는 바꿀 수 없습니다. 아래 조건은 변경 후 전체 값입니다.</p>
+          </div></header>
+          <div class="step-body grid-3">
+            <div class="field"><span class="field-label">고정 조건</span><div id="fixed-terms" class="read-only-box">-</div></div>
+            <div class="field" data-key="shipToWarehouseId"><label class="field-label" for="f-shipToWarehouseId">입고 창고<span class="req">*</span></label><select id="f-shipToWarehouseId" class="input"></select><span class="field-error" hidden></span></div>
+            <div class="field" data-key="exchangeRate"><label class="field-label" for="f-exchangeRate">환율</label><input id="f-exchangeRate" class="input mono" inputmode="decimal"><span class="field-error" hidden></span></div>
+            <div class="field" data-key="paymentTermsCode"><label class="field-label" for="f-paymentTermsCode">결제 조건</label><input id="f-paymentTermsCode" class="input mono" maxlength="50"><span class="field-error" hidden></span></div>
+            <div class="field" data-key="incotermsCode"><label class="field-label" for="f-incotermsCode">인코텀즈</label><input id="f-incotermsCode" class="input mono" maxlength="10"><span class="field-error" hidden></span></div>
+            <div class="field" data-key="incotermsPlace"><label class="field-label" for="f-incotermsPlace">인코텀즈 장소</label><input id="f-incotermsPlace" class="input" maxlength="255"><span class="field-error" hidden></span></div>
+            <div class="field span-all" data-key="paymentTermsSnapshot"><label class="field-label" for="f-paymentTermsSnapshot">결제 조건 상세 (JSON)</label><textarea id="f-paymentTermsSnapshot" class="input mono" rows="2"></textarea><span class="field-error" hidden></span></div>
+          </div>
+        </section>
+
+        <section class="card step">
+          <header class="step-head"><span class="step-no">3</span><div>
+            <h2 class="card-title">품목 변경안</h2>
+            <p class="card-desc">기존 라인은 유지 또는 취소하고, 필요한 품목은 새 라인으로 추가합니다.</p>
+          </div></header>
+          <div id="revision-lines" class="revision-lines"></div>
+          <div class="step-foot"><button id="add-revision-line" type="button" class="btn btn-dashed">+ 신규 품목 추가</button></div>
+        </section>
+
+        <section class="card revision-submit">
+          <div><h2 class="card-title">개정 초안 저장</h2><p class="card-desc">저장해도 현재 유효 발주와 입고 기준은 바뀌지 않습니다.</p></div>
+          <div id="form-alert" class="alert" role="alert" hidden></div>
+          <div class="revision-actions"><button id="restore-current" type="button" class="btn btn-ghost">현재 유효본으로 되돌리기</button><button id="submit-btn" type="submit" class="btn btn-primary">개정 초안 저장</button></div>
+        </section>
+      </form>
+    </div>
+  </main>
+  <div id="toasts" class="toasts" aria-live="polite"></div>
+  <script type="module" src="./purchase-order-revision.js"></script>
+</body>
+</html>
